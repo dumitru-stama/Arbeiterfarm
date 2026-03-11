@@ -1,0 +1,33 @@
+# ghidra.analyze — Run headless Ghidra analysis on a binary
+# Executor: af-executor (OOP protocol)
+# Requires: Ghidra installed at ghidra_home, Java 17-21
+
+[tool]
+name = "ghidra.analyze"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = """Run headless Ghidra analysis on a binary. Returns function list with \
+addresses, sizes, and calling conventions. Analysis results are cached \
+per artifact SHA256 for reuse by ghidra.decompile."""
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.policy]
+sandbox = "PrivateLoopback"
+timeout_ms = 300000
+max_output_bytes = 67108864
+max_produced_artifacts = 2
+writable_bind_mounts = ["/tmp/af/ghidra_cache"]
+extra_ro_bind_mounts = ["/opt/ghidra_11.0", "/path/to/ghidra-scripts"]
+
+[tool.context_extra]
+ghidra_home = "/opt/ghidra_11.0"
+cache_dir = "/tmp/af/ghidra_cache"
+scripts_dir = "/path/to/ghidra-scripts"

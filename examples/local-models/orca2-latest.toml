@@ -1,0 +1,12 @@
+# Orca 2 7B — Microsoft's reasoning-tuned model
+# 6.7B parameters, Q4_0 quantization, 4096 context
+# Auto-generated from: ollama show orca2:latest
+
+[model]
+name = "orca2:latest"
+context_window = 4096
+max_output_tokens = 1024
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2023-09"

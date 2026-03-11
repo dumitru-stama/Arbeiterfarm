@@ -1,0 +1,12 @@
+# Code Llama 7B — Meta's code-specialized Llama 2
+# 6.7B parameters, Q4_0 quantization, 16384 context
+# Auto-generated from: ollama show codellama:latest
+
+[model]
+name = "codellama:latest"
+context_window = 16384
+max_output_tokens = 4096
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2023-09"

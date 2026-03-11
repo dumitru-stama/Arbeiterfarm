@@ -1,0 +1,38 @@
+# rizin.xrefs — Cross-references for a function/address
+# Executor: af-executor (OOP protocol)
+# Requires: rizin installed at the path specified in context_extra
+
+[tool]
+name = "rizin.xrefs"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = "Cross-references for a function/address using rizin"
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "address"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.address]
+type = "string"
+pattern = "^0x[0-9a-fA-F]+$"
+description = "Address to find cross-references for"
+
+[tool.input_schema.properties.direction]
+type = "string"
+enum = ["to", "from", "both"]
+default = "both"
+description = "Direction of cross-references"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 60000
+max_output_bytes = 67108864
+max_produced_artifacts = 4
+
+[tool.context_extra]
+rizin_path = "/usr/bin/rizin"

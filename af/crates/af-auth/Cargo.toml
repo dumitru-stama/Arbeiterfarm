@@ -1,0 +1,16 @@
+[package]
+name = "af-auth"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-core = { workspace = true }
+af-db = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+rand = { workspace = true }
+thiserror = { workspace = true }

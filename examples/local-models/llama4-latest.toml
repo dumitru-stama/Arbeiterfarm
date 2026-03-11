@@ -1,0 +1,12 @@
+# Llama 4 Scout 109B — Meta's latest, 10M context
+# 108.6B parameters, Q4_K_M quantization, 10485760 context
+# Auto-generated from: ollama show llama4:latest
+
+[model]
+name = "llama4:latest"
+context_window = 10485760
+max_output_tokens = 65536
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = true
+knowledge_cutoff = "2025-03"

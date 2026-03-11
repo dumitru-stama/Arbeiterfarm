@@ -1,0 +1,12 @@
+# Llama 3.3 70B — Meta's efficient 70B
+# 70.6B parameters, Q4_K_M quantization, 131072 context
+# Auto-generated from: ollama show llama3.3:latest
+
+[model]
+name = "llama3.3:latest"
+context_window = 131072
+max_output_tokens = 8192
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-12"

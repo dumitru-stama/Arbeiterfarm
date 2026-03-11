@@ -1,0 +1,36 @@
+# file.strings — Extract printable strings from a file
+# Executor: af-builtin-executor (OOP protocol)
+
+[tool]
+name = "file.strings"
+version = 1
+binary = "/usr/local/bin/af-builtin-executor"
+protocol = "oop"
+description = "Extract printable strings from a file (like the `strings` command)"
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.min_length]
+type = "integer"
+minimum = 1
+default = 4
+description = "Minimum string length"
+
+[tool.input_schema.properties.max_strings]
+type = "integer"
+minimum = 1
+default = 1000
+description = "Maximum number of strings to return"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+max_input_bytes = 65536
+max_output_bytes = 16777216
+max_produced_artifacts = 0

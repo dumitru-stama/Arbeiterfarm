@@ -1,0 +1,36 @@
+# file.hexdump — Hex + ASCII dump of a byte range
+# Executor: af-builtin-executor (OOP protocol)
+
+[tool]
+name = "file.hexdump"
+version = 1
+binary = "/usr/local/bin/af-builtin-executor"
+protocol = "oop"
+description = "Hex + ASCII dump of a byte range from a file"
+output_redirect = "Forbidden"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.offset]
+type = "integer"
+minimum = 0
+default = 0
+description = "Byte offset"
+
+[tool.input_schema.properties.length]
+type = "integer"
+minimum = 1
+default = 256
+description = "Number of bytes to dump"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+max_input_bytes = 65536
+max_output_bytes = 16777216
+max_produced_artifacts = 0

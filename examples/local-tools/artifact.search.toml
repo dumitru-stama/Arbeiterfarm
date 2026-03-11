@@ -1,0 +1,38 @@
+# artifact.search — Search for artifacts across all accessible projects
+# BUILTIN ONLY: This tool runs in-process with direct DB access (SandboxProfile::Trusted).
+# It cannot be loaded from TOML — this file is a reference for the schema only.
+
+[tool]
+name = "artifact.search"
+version = 1
+binary = ""  # N/A — builtin in-process executor
+protocol = "simple"
+description = "Search for artifacts across all accessible projects by filename, description, SHA256 hash, or MIME type. Uses substring matching (ILIKE). RLS automatically scopes results to projects the current user can access."
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["query"]
+
+[tool.input_schema.properties.query]
+type = "string"
+minLength = 1
+maxLength = 200
+description = "Search term (matched as substring against the selected field)"
+
+[tool.input_schema.properties.field]
+type = "string"
+enum = ["any", "filename", "description", "sha256", "mime_type"]
+default = "any"
+description = "Restrict search to a specific field, or 'any' to search all fields"
+
+[tool.input_schema.properties.limit]
+type = "integer"
+minimum = 1
+maximum = 100
+default = 20
+description = "Maximum number of results to return"
+
+[tool.policy]
+sandbox = "Trusted"
+timeout_ms = 10000

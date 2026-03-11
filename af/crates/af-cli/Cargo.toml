@@ -1,0 +1,46 @@
+[package]
+name = "af-cli"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-core = { workspace = true }
+af-db = { workspace = true }
+af-auth = { workspace = true }
+af-storage = { workspace = true }
+af-jobs = { workspace = true }
+af-llm = { workspace = true }
+af-agents = { workspace = true }
+af-builtin-tools = { path = "../af-builtin-tools" }
+af-web-gateway = { workspace = true }
+af-email = { workspace = true }
+af-notify = { workspace = true }
+af-api = { workspace = true }
+axum = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+clap = { workspace = true }
+uuid = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+which = { workspace = true }
+rustyline = { workspace = true }
+chrono = { workspace = true }
+rustls = { workspace = true }
+rustls-pemfile = { workspace = true }
+tokio-rustls = { workspace = true }
+hyper = { workspace = true }
+hyper-util = { workspace = true }
+tower-service = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+async-trait = { workspace = true }
+reqwest = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

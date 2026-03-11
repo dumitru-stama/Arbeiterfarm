@@ -1,0 +1,13 @@
+[workflow]
+name = "auto-triage"
+description = "Auto-triggered surface analysis on upload"
+
+[[workflow.steps]]
+agent = "surface"
+group = 1
+prompt = "Perform quick triage on the uploaded artifact."
+
+[[workflow.steps]]
+agent = "reporter"
+group = 2
+prompt = "Write a brief summary of the triage findings."

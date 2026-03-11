@@ -1,0 +1,12 @@
+# Mixtral 8x7B MoE — Mistral's mixture-of-experts
+# 46.7B parameters, Q4_0 quantization, 32768 context
+# Auto-generated from: ollama show mixtral:latest
+
+[model]
+name = "mixtral:latest"
+context_window = 32768
+max_output_tokens = 4096
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-01"

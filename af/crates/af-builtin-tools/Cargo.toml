@@ -1,0 +1,30 @@
+[package]
+name = "af-builtin-tools"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "af-builtin-executor"
+path = "src/bin/executor.rs"
+
+[dependencies]
+af-core = { workspace = true }
+af-db = { workspace = true }
+af-llm = { workspace = true }
+async-trait = { workspace = true }
+sqlx = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+uuid = { workspace = true }
+md-5 = { workspace = true }
+regex = { workspace = true }
+anyhow = { workspace = true }
+reqwest = { workspace = true }
+html2text = { workspace = true }
+af-storage = { workspace = true }

@@ -1,0 +1,14 @@
+[package]
+name = "af-app"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[[bin]]
+name = "af"
+path = "src/main.rs"
+
+[dependencies]
+af-cli = { workspace = true }
+tokio = { workspace = true }
+anyhow = { workspace = true }

@@ -1,0 +1,28 @@
+# artifact.describe — Set a human-readable description on an artifact
+# BUILTIN ONLY: This tool runs in-process with direct DB access (SandboxProfile::Trusted).
+# It cannot be loaded from TOML — this file is a reference for the schema only.
+
+[tool]
+name = "artifact.describe"
+version = 1
+binary = ""  # N/A — builtin in-process executor
+protocol = "simple"
+description = "Set a human-readable description on an artifact. Use this to annotate artifacts with findings (e.g. file type, packer, purpose) so later analysis can leverage prior context."
+output_redirect = "Forbidden"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "description"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.description]
+type = "string"
+minLength = 1
+maxLength = 1000
+description = "Description text for the artifact (max 1000 chars)"
+
+[tool.policy]
+sandbox = "Trusted"
+timeout_ms = 10000

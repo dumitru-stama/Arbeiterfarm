@@ -1,0 +1,12 @@
+# Gemma 3 12B — Mid-size multimodal Gemma 3
+# 12.2B parameters, Q4_K_M quantization, 131072 context
+# Auto-generated from: ollama show gemma3:12b
+
+[model]
+name = "gemma3:12b"
+context_window = 131072
+max_output_tokens = 8192
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = true
+knowledge_cutoff = "2025-01"

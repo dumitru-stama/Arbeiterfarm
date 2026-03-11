@@ -1,0 +1,24 @@
+# file.info — Get file metadata: size, hashes, magic bytes
+# Executor: af-builtin-executor (OOP protocol)
+
+[tool]
+name = "file.info"
+version = 1
+binary = "/usr/local/bin/af-builtin-executor"
+protocol = "oop"
+description = "Get file metadata: size, hashes (MD5/SHA1/SHA256), magic bytes detection"
+output_redirect = "Forbidden"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+max_input_bytes = 65536
+max_output_bytes = 16777216
+max_produced_artifacts = 0

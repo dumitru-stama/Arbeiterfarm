@@ -1,0 +1,13 @@
+[package]
+name = "af-plugin-api"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-core = { workspace = true }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }

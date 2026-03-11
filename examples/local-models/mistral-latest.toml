@@ -1,0 +1,12 @@
+# Mistral 7B v0.3 — Original Mistral instruct
+# 7.2B parameters, Q4_K_M quantization, 32768 context
+# Auto-generated from: ollama show mistral:latest
+
+[model]
+name = "mistral:latest"
+context_window = 32768
+max_output_tokens = 4096
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-01"

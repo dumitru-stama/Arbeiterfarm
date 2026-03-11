@@ -1,0 +1,113 @@
+[workspace]
+members = [
+    "af/crates/af-core",
+    "af/crates/af-plugin-api",
+    "af/crates/af-db",
+    "af/crates/af-storage",
+    "af/crates/af-jobs",
+    "af/crates/af-llm",
+    "af/crates/af-agents",
+    "af/crates/af-builtin-tools",
+    "af/crates/af-web-gateway",
+    "af/crates/af-email",
+    "af/crates/af-notify",
+    "af/crates/af-cli",
+    "af/crates/af-auth",
+    "af/crates/af-api",
+    "arbeiterfarm",
+    "arbeiterfarm/crates/af-re-tools",
+    "arbeiterfarm/crates/af-re-vt",
+    "arbeiterfarm/crates/af-re-sandbox",
+    "af-app",
+]
+exclude = ["cwc"]
+resolver = "2"
+
+[workspace.package]
+authors = ["Dumitru Stama"]
+
+[workspace.dependencies]
+# Async
+tokio = { version = "1", features = ["full"] }
+async-trait = "0.1"
+futures = "0.3"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.8"
+
+# Database
+sqlx = { version = "0.8", features = ["runtime-tokio-rustls", "postgres", "uuid", "chrono", "json"] }
+
+# Error handling
+thiserror = "2"
+anyhow = "1"
+
+# HTTP
+reqwest = { version = "0.12", features = ["json", "stream", "multipart"] }
+axum = { version = "0.8", features = ["multipart"] }
+tower-http = { version = "0.6", features = ["cors", "trace", "limit", "fs"] }
+tokio-stream = "0.1"
+tokio-util = { version = "0.7", features = ["io"] }
+
+# TLS
+rustls = { version = "0.23", features = ["ring"] }
+rustls-pemfile = "2"
+tokio-rustls = "0.26"
+hyper = { version = "1", features = ["http1"] }
+hyper-util = { version = "0.1", features = ["tokio", "http1", "http2", "server-auto"] }
+tower-service = "0.3"
+
+# Utilities
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+sha2 = "0.10"
+hex = "0.4"
+md-5 = "0.10"
+regex = "1"
+jsonschema = "0.28"
+rustyline = "15"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+clap = { version = "4", features = ["derive", "env"] }
+which = "7"
+dashmap = "6"
+zip = "2"
+
+# Workspace crates
+af-core = { path = "af/crates/af-core" }
+af-plugin-api = { path = "af/crates/af-plugin-api" }
+af-db = { path = "af/crates/af-db" }
+af-storage = { path = "af/crates/af-storage" }
+af-jobs = { path = "af/crates/af-jobs" }
+af-llm = { path = "af/crates/af-llm" }
+af-agents = { path = "af/crates/af-agents" }
+af-builtin-tools = { path = "af/crates/af-builtin-tools" }
+af-cli = { path = "af/crates/af-cli" }
+af-auth = { path = "af/crates/af-auth" }
+af-api = { path = "af/crates/af-api" }
+af-web-gateway = { path = "af/crates/af-web-gateway" }
+af-email = { path = "af/crates/af-email" }
+af-notify = { path = "af/crates/af-notify" }
+rand = "0.8"
+tempfile = "3"
+base64 = "0.22"
+flate2 = "1"
+bzip2 = "0.5"
+tar = "0.4"
+csv = "1"
+serde_yml = "0.0.12"
+quick-xml = { version = "0.37", features = ["serialize"] }
+jaq-interpret = "1.5"
+jaq-parse = "1"
+jaq-syn = "1"
+sevenz-rust = "0.6"
+pdf-extract = "0.10"
+html2text = "0.16"
+pulldown-cmark = "0.13"
+calamine = "0.33"
+
+# CWC crates (via submodule — NOT workspace members, referenced as path deps only)
+cwc-core = { path = "cwc/cwc-core" }
+cwc-session = { path = "cwc/cwc-session" }

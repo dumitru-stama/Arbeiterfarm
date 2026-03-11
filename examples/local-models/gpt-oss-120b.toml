@@ -1,0 +1,11 @@
+# GPT-OSS 120B — Open-source GPT, MXFP4 quantized
+# 116.8B parameters, MXFP4 quantization, 131072 context
+# Auto-generated from: ollama show gpt-oss:120b
+
+[model]
+name = "gpt-oss:120b"
+context_window = 131072
+max_output_tokens = 16384
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false

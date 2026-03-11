@@ -1,0 +1,12 @@
+# Qwen 1.5 72B — Large original Qwen
+# 72.3B parameters, Q4_0 quantization, 32768 context
+# Auto-generated from: ollama show qwen:72b
+
+[model]
+name = "qwen:72b"
+context_window = 32768
+max_output_tokens = 4096
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-01"

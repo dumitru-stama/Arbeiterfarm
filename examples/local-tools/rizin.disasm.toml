@@ -1,0 +1,38 @@
+# rizin.disasm — Disassemble an address range
+# Executor: af-executor (OOP protocol)
+# Requires: rizin installed at the path specified in context_extra
+
+[tool]
+name = "rizin.disasm"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = "Disassemble an address range using rizin"
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "address", "length"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.address]
+type = "string"
+pattern = "^0x[0-9a-fA-F]+$"
+description = "Start address in hex (e.g. 0x00401000)"
+
+[tool.input_schema.properties.length]
+type = "integer"
+minimum = 1
+maximum = 4096
+description = "Number of instructions to disassemble"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 60000
+max_output_bytes = 67108864
+max_produced_artifacts = 4
+
+[tool.context_extra]
+rizin_path = "/usr/bin/rizin"

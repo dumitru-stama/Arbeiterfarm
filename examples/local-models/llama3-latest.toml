@@ -1,0 +1,12 @@
+# Llama 3 8B — Meta's 8B base (8K context)
+# 8.0B parameters, Q4_0 quantization, 8192 context
+# Auto-generated from: ollama show llama3:latest
+
+[model]
+name = "llama3:latest"
+context_window = 8192
+max_output_tokens = 2048
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-03"

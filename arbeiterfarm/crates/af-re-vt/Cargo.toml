@@ -1,0 +1,17 @@
+[package]
+name = "af-re-vt"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-plugin-api = { path = "../../../af/crates/af-plugin-api" }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+tokio = { workspace = true, features = ["net", "io-util", "sync", "time"] }
+reqwest = { workspace = true }
+thiserror = { workspace = true }
+chrono = { workspace = true }
+dashmap = { workspace = true }

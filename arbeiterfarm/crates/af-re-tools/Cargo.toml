@@ -1,0 +1,38 @@
+[package]
+name = "af-re-tools"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-plugin-api = { path = "../../../af/crates/af-plugin-api" }
+af-builtin-tools = { path = "../../../af/crates/af-builtin-tools" }
+af-db = { workspace = true }
+af-re-vt = { path = "../af-re-vt" }
+af-re-sandbox = { path = "../af-re-sandbox" }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+regex = { workspace = true }
+tokio = { workspace = true }
+which = { workspace = true }
+toml = { workspace = true }
+libc = "0.2"
+base64 = { workspace = true }
+flate2 = { workspace = true }
+bzip2 = { workspace = true }
+tar = { workspace = true }
+csv = { workspace = true }
+zip = { workspace = true }
+serde_yml = { workspace = true }
+quick-xml = { workspace = true }
+jaq-interpret = { workspace = true }
+jaq-parse = { workspace = true }
+jaq-syn = { workspace = true }
+sevenz-rust = { workspace = true }
+pdf-extract = { workspace = true }
+html2text = { workspace = true }
+pulldown-cmark = { workspace = true }
+calamine = { workspace = true }

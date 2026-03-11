@@ -1,0 +1,12 @@
+# Qwen 3 14B — Mid-size Qwen 3
+# 14.8B parameters, Q4_K_M quantization, 40960 context
+# Auto-generated from: ollama show qwen3:14b
+
+[model]
+name = "qwen3:14b"
+context_window = 40960
+max_output_tokens = 8192
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2025-01"

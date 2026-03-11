@@ -1,0 +1,44 @@
+# file.read_range — Read a byte or line range from a file
+# Executor: af-builtin-executor (OOP protocol)
+
+[tool]
+name = "file.read_range"
+version = 1
+binary = "/usr/local/bin/af-builtin-executor"
+protocol = "oop"
+description = "Read a byte or line range from a file"
+output_redirect = "Forbidden"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.offset]
+type = "integer"
+minimum = 0
+description = "Byte offset to start reading from"
+
+[tool.input_schema.properties.length]
+type = "integer"
+minimum = 1
+description = "Number of bytes to read"
+
+[tool.input_schema.properties.line_start]
+type = "integer"
+minimum = 1
+description = "Start line (1-indexed)"
+
+[tool.input_schema.properties.line_count]
+type = "integer"
+minimum = 1
+description = "Number of lines to read"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+max_input_bytes = 65536
+max_output_bytes = 16777216
+max_produced_artifacts = 0

@@ -1,0 +1,8 @@
+name = "default"
+route = "auto"
+tools = ["file.*", "echo.tool", "rizin.*", "strings.extract", "vt.*", "ghidra.*", "re-ioc.*", "artifact.*"]
+
+[prompt]
+text = """You are a reverse engineering assistant. Use the available tools to \
+analyze files and provide detailed technical analysis. Always cite \
+evidence from tool results."""

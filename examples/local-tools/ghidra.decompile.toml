@@ -1,0 +1,42 @@
+# ghidra.decompile — Decompile functions to C pseudocode
+# Executor: af-executor (OOP protocol)
+# Requires: ghidra.analyze must have been run first on the same artifact
+
+[tool]
+name = "ghidra.decompile"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = """Decompile one or more functions to C pseudocode using Ghidra. \
+Requires ghidra.analyze to have been run first. Functions can be \
+specified by name (e.g. 'main', 'FUN_00401000') or address (e.g. '0x00401000')."""
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "functions"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.functions]
+type = "array"
+minItems = 1
+maxItems = 20
+description = "Function names or addresses (e.g. 'main', 'FUN_00401000', '0x00401000')"
+
+[tool.input_schema.properties.functions.items]
+type = "string"
+
+[tool.policy]
+sandbox = "PrivateLoopback"
+timeout_ms = 180000
+max_output_bytes = 33554432
+max_produced_artifacts = 4
+writable_bind_mounts = ["/tmp/af/ghidra_cache"]
+extra_ro_bind_mounts = ["/opt/ghidra_11.0", "/path/to/ghidra-scripts"]
+
+[tool.context_extra]
+ghidra_home = "/opt/ghidra_11.0"
+cache_dir = "/tmp/af/ghidra_cache"
+scripts_dir = "/path/to/ghidra-scripts"

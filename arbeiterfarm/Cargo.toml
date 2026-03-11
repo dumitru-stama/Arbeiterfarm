@@ -1,0 +1,31 @@
+[package]
+name = "arbeiterfarm"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "af"
+path = "src/main.rs"
+
+[[bin]]
+name = "af-executor"
+path = "src/bin/re_executor.rs"
+
+[dependencies]
+af-core = { workspace = true }
+af-plugin-api = { workspace = true }
+af-builtin-tools = { workspace = true }
+af-llm = { workspace = true }
+af-agents = { workspace = true }
+af-cli = { workspace = true }
+af-db = { workspace = true }
+af-re-tools = { path = "crates/af-re-tools" }
+af-re-vt = { path = "crates/af-re-vt" }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+anyhow = { workspace = true }
+which = { workspace = true }
+tracing-subscriber = { workspace = true }
+libc = "0.2"

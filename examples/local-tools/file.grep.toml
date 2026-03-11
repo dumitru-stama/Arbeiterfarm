@@ -1,0 +1,40 @@
+# file.grep — Regex search in a file with context lines
+# Executor: af-builtin-executor (OOP protocol)
+
+[tool]
+name = "file.grep"
+version = 1
+binary = "/usr/local/bin/af-builtin-executor"
+protocol = "oop"
+description = "Search for a regex pattern in a file with context lines"
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "pattern"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.pattern]
+type = "string"
+description = "Regex pattern to search for"
+
+[tool.input_schema.properties.context_lines]
+type = "integer"
+minimum = 0
+default = 2
+description = "Lines of context around each match"
+
+[tool.input_schema.properties.max_matches]
+type = "integer"
+minimum = 1
+default = 100
+description = "Maximum number of matches to return"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+max_input_bytes = 65536
+max_output_bytes = 16777216
+max_produced_artifacts = 0

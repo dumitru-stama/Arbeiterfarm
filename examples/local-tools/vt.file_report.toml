@@ -1,0 +1,27 @@
+# vt.file_report — VirusTotal hash lookup via UDS gateway
+# Executor: af-executor (OOP protocol)
+# Requires: VT gateway daemon running at the socket path
+
+[tool]
+name = "vt.file_report"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = "Look up a file hash on VirusTotal. Returns detection ratio, tags, family names, and first-seen date. Hash-only lookup — no file upload."
+output_redirect = "Forbidden"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+description = "Artifact to look up (its SHA256 hash is sent to VT)"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 30000
+uds_bind_mounts = ["/run/af/vt_gateway.sock"]
+
+[tool.context_extra]
+gateway_socket = "/run/af/vt_gateway.sock"

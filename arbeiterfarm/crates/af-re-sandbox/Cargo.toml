@@ -1,0 +1,15 @@
+[package]
+name = "af-re-sandbox"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-plugin-api = { path = "../../../af/crates/af-plugin-api" }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["net", "io-util", "sync", "time", "fs"] }
+tracing = { workspace = true }
+uuid = { workspace = true }
+base64 = { workspace = true }

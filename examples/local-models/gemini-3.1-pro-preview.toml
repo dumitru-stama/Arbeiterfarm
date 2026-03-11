@@ -1,0 +1,13 @@
+# Gemini 3.1 Pro — Google's latest reasoning model (February 2026)
+# 1M context window. 64K max output. ARC-AGI-2 score: 77.1%.
+# Source: https://ai.google.dev/gemini-api/docs/pricing
+
+[model]
+name = "gemini-3.1-pro-preview"
+context_window = 1048576
+max_output_tokens = 65536
+cost_per_mtok_input = 2.00              # prompts <= 200K tokens
+cost_per_mtok_output = 12.00            # prompts <= 200K tokens
+cost_per_mtok_cached_input = 0.20       # context caching read
+supports_vision = true
+knowledge_cutoff = "2025-01"

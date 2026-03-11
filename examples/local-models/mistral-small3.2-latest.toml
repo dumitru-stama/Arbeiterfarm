@@ -1,0 +1,12 @@
+# Mistral Small 3.2 24B — Fast Mistral with vision
+# 24.0B parameters, Q4_K_M quantization, 131072 context
+# Auto-generated from: ollama show mistral-small3.2:latest
+
+[model]
+name = "mistral-small3.2:latest"
+context_window = 131072
+max_output_tokens = 8192
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = true
+knowledge_cutoff = "2025-01"

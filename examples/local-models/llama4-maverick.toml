@@ -1,0 +1,12 @@
+# Llama 4 Maverick 402B MoE — Meta's largest open model
+# 401.6B parameters, Q4_K_M quantization, 1048576 context
+# Auto-generated from: ollama show llama4:maverick
+
+[model]
+name = "llama4:maverick"
+context_window = 1048576
+max_output_tokens = 65536
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = true
+knowledge_cutoff = "2025-03"

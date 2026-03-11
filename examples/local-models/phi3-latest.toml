@@ -1,0 +1,12 @@
+# Phi-3 Mini 3.8B — Microsoft's compact model
+# 3.8B parameters, Q4_0 quantization, 131072 context
+# Auto-generated from: ollama show phi3:latest
+
+[model]
+name = "phi3:latest"
+context_window = 131072
+max_output_tokens = 8192
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false
+knowledge_cutoff = "2024-01"

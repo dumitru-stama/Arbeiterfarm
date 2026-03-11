@@ -1,0 +1,14 @@
+# Claude Haiku 4.5 — Fast and affordable with extended thinking
+# Model ID: claude-haiku-4-5-20251001. 200K context. 64K max output.
+# Source: https://platform.claude.com/docs/en/about-claude/pricing
+
+[model]
+name = "claude-haiku-4-5-20251001"
+context_window = 200000
+max_output_tokens = 64000
+cost_per_mtok_input = 1.00
+cost_per_mtok_output = 5.00
+cost_per_mtok_cached_input = 0.10       # cache hits: 10% of input
+cost_per_mtok_cache_creation = 1.25     # 5-min cache writes: 125% of input
+supports_vision = true
+knowledge_cutoff = "2025-03"

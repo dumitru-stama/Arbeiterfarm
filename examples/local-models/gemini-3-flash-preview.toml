@@ -1,0 +1,13 @@
+# Gemini 3 Flash — Frontier intelligence built for speed
+# 1M context window. 64K max output. Cheapest Gemini 3 model.
+# Source: https://ai.google.dev/gemini-api/docs/pricing
+
+[model]
+name = "gemini-3-flash-preview"
+context_window = 1048576
+max_output_tokens = 65536
+cost_per_mtok_input = 0.50
+cost_per_mtok_output = 3.00
+cost_per_mtok_cached_input = 0.05       # context caching read
+supports_vision = true
+knowledge_cutoff = "2025-01"

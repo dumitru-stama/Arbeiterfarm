@@ -1,0 +1,11 @@
+# GPT-OSS 20B — Default GPT-OSS (20B)
+# 20.9B parameters, MXFP4 quantization, 131072 context
+# Auto-generated from: ollama show gpt-oss:latest
+
+[model]
+name = "gpt-oss:latest"
+context_window = 131072
+max_output_tokens = 16384
+cost_per_mtok_input = 0.0
+cost_per_mtok_output = 0.0
+supports_vision = false

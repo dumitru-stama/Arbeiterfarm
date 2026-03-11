@@ -1,0 +1,26 @@
+[workflow]
+name = "full-analysis"
+description = "Standard RE pipeline: surface + intel parallel, then decompiler, then reporter"
+
+# Group 1: surface triage and intel run in parallel
+[[workflow.steps]]
+agent = "surface"
+group = 1
+prompt = "Perform quick surface triage."
+
+[[workflow.steps]]
+agent = "intel"
+group = 1
+prompt = "Look up threat intelligence."
+
+# Group 2: decompiler runs after surface + intel finish
+[[workflow.steps]]
+agent = "decompiler"
+group = 2
+prompt = "Analyze key functions found in surface triage."
+
+# Group 3: reporter synthesizes everything
+[[workflow.steps]]
+agent = "reporter"
+group = 3
+prompt = "Write report synthesizing all findings."

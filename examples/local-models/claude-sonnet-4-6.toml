@@ -1,0 +1,14 @@
+# Claude Sonnet 4.6 — Best combination of speed and intelligence
+# Released February 2026. 200K context (1M beta). 64K max output.
+# Source: https://platform.claude.com/docs/en/about-claude/pricing
+
+[model]
+name = "claude-sonnet-4-6"
+context_window = 200000
+max_output_tokens = 64000
+cost_per_mtok_input = 3.00
+cost_per_mtok_output = 15.00
+cost_per_mtok_cached_input = 0.30       # cache hits: 10% of input
+cost_per_mtok_cache_creation = 3.75     # 5-min cache writes: 125% of input
+supports_vision = true
+knowledge_cutoff = "2025-03"

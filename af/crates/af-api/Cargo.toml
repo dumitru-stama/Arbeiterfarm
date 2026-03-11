@@ -1,0 +1,33 @@
+[package]
+name = "af-api"
+version = "0.1.0"
+edition = "2021"
+authors = ["Dumitru Stama"]
+
+[dependencies]
+af-core = { workspace = true }
+af-db = { workspace = true }
+af-auth = { workspace = true }
+af-storage = { workspace = true }
+af-jobs = { workspace = true }
+af-agents = { workspace = true }
+af-llm = { workspace = true }
+axum = { workspace = true }
+tower-http = { workspace = true }
+tokio = { workspace = true }
+tokio-stream = { workspace = true }
+tokio-util = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+uuid = { workspace = true }
+chrono = { workspace = true }
+tracing = { workspace = true }
+sqlx = { workspace = true }
+dashmap = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+zip = { workspace = true }
+regex = { workspace = true }
+
+[dev-dependencies]
+tower = { version = "0.5", features = ["util"] }

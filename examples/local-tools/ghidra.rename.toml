@@ -1,0 +1,51 @@
+# ghidra.rename — Rename functions in cached Ghidra project
+# Executor: af-executor (OOP protocol)
+# Requires: ghidra.analyze must have been run first on the same artifact
+
+[tool]
+name = "ghidra.rename"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = """Rename functions in the cached Ghidra project so subsequent \
+ghidra.decompile calls show meaningful names. Functions can be \
+specified by name (e.g. 'FUN_00401000') or address (e.g. '0x00401000')."""
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id", "renames"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.renames]
+type = "array"
+minItems = 1
+maxItems = 50
+description = "Array of {old, new} rename pairs"
+
+[tool.input_schema.properties.renames.items]
+type = "object"
+required = ["old", "new"]
+
+[tool.input_schema.properties.renames.items.properties.old]
+type = "string"
+description = "Current function name or address (e.g. 'FUN_00401000', '0x00401000')"
+
+[tool.input_schema.properties.renames.items.properties.new]
+type = "string"
+description = "New function name"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 180000
+max_output_bytes = 33554432
+max_produced_artifacts = 0
+writable_bind_mounts = ["/tmp/af/ghidra_cache"]
+extra_ro_bind_mounts = ["/opt/ghidra_11.0", "/path/to/ghidra-scripts"]
+
+[tool.context_extra]
+ghidra_home = "/opt/ghidra_11.0"
+cache_dir = "/tmp/af/ghidra_cache"
+scripts_dir = "/path/to/ghidra-scripts"

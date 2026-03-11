@@ -1,0 +1,47 @@
+# strings.extract — Advanced string extraction with encoding detection
+# Executor: af-executor (OOP protocol)
+# Requires: rizin installed at the path specified in context_extra
+
+[tool]
+name = "strings.extract"
+version = 1
+binary = "/usr/local/bin/af-executor"
+protocol = "oop"
+description = "Advanced string extraction with encoding detection using rizin"
+output_redirect = "Allowed"
+
+[tool.input_schema]
+type = "object"
+required = ["artifact_id"]
+
+[tool.input_schema.properties.artifact_id]
+"$ref" = "#/$defs/ArtifactId"
+
+[tool.input_schema.properties.min_length]
+type = "integer"
+minimum = 2
+maximum = 256
+default = 4
+description = "Minimum string length to include"
+
+[tool.input_schema.properties.encoding]
+type = "string"
+enum = ["ascii", "utf8", "utf16le", "utf16be", "all"]
+default = "all"
+description = "String encoding filter"
+
+[tool.input_schema.properties.max_strings]
+type = "integer"
+minimum = 1
+maximum = 10000
+default = 1000
+description = "Maximum number of strings to return"
+
+[tool.policy]
+sandbox = "NoNetReadOnly"
+timeout_ms = 60000
+max_output_bytes = 67108864
+max_produced_artifacts = 4
+
+[tool.context_extra]
+rizin_path = "/usr/bin/rizin"
