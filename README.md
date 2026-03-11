@@ -198,6 +198,73 @@ See the [examples/](examples/) directory for complete reference with all options
 
 See [docs/THREAT_MODEL_V4.md](docs/THREAT_MODEL_V4.md) for the full STRIDE analysis.
 
+## Environment Variables
+
+Run `af-re --help` for the full reference. Summary:
+
+| Category | Variable | Description | Default |
+|---|---|---|---|
+| **Database & Server** | `AF_DATABASE_URL` | Postgres connection | `postgres://af:af@localhost/af` |
+| | `AF_DB_POOL_SIZE` | Connection pool size (use >=20 for thinking threads) | `10` |
+| | `AF_BIND_ADDR` | Server bind address | `127.0.0.1:8080` |
+| | `AF_CORS_ORIGIN` | CORS origin (e.g. `*`) | — |
+| | `AF_TLS_CERT` / `AF_TLS_KEY` | TLS certificate and key (PEM) | — |
+| | `AF_API_RATE_LIMIT` | Requests/min/key | `60` |
+| | `AF_UPLOAD_MAX_BYTES` | Max upload size | `104857600` (100 MB) |
+| | `AF_MAX_STREAM_DURATION_SECS` | Global agent/stream timeout | `1800` (30 min) |
+| | `AF_MAX_CONCURRENT_STREAMS` | Max concurrent HTTP streams | `5` |
+| **Storage** | `AF_STORAGE_ROOT` | Blob storage root | `/tmp/af/storage` |
+| | `AF_SCRATCH_ROOT` | Scratch directories | `/tmp/af/scratch` |
+| | `AF_CONFIG_PATH` | Config file path | `~/.af/config.toml` |
+| **LLM Backends** | `AF_LOCAL_ENDPOINT` | Local LLM server (Ollama/vLLM/llama.cpp) | — |
+| | `AF_LOCAL_MODEL` | Local model name | `gpt-oss` |
+| | `AF_LOCAL_API_KEY` | Local server API key | — |
+| | `AF_LOCAL_MODELS` | Extra local models (comma-separated) | — |
+| | `AF_OPENAI_API_KEY` | OpenAI API key | — |
+| | `AF_OPENAI_ENDPOINT` | Custom OpenAI-compatible endpoint | — |
+| | `AF_OPENAI_MODEL` | OpenAI model | `gpt-4o` |
+| | `AF_OPENAI_MODELS` | Extra OpenAI models (comma-separated) | — |
+| | `AF_ANTHROPIC_API_KEY` | Anthropic API key | — |
+| | `AF_ANTHROPIC_MODEL` | Anthropic model | `claude-sonnet-4-20250514` |
+| | `AF_ANTHROPIC_MODELS` | Extra Anthropic models (comma-separated) | — |
+| | `AF_VERTEX_ENDPOINT` | Vertex AI endpoint URL | — |
+| | `AF_VERTEX_ACCESS_TOKEN` | OAuth2 token for Vertex AI | — |
+| | `AF_DEFAULT_ROUTE` | Default LLM backend for auto routing | — |
+| **Embeddings** | `AF_EMBEDDING_ENDPOINT` | Embedding server | falls back to `AF_LOCAL_ENDPOINT` |
+| | `AF_EMBEDDING_MODEL` | Embedding model | `snowflake-arctic-embed2` |
+| | `AF_EMBEDDING_DIMENSIONS` | Vector dimensions | `768` or `1024` |
+| **Context** | `AF_USE_CWC` | Use CWC context compiler (set `0` for legacy) | `1` |
+| **Tool Paths** | `AF_GHIDRA_HOME` | Ghidra installation directory | — |
+| | `AF_GHIDRA_CACHE` | Ghidra project cache | `/tmp/af/ghidra_cache` |
+| | `AF_RIZIN_PATH` | rizin binary | `/usr/bin/rizin` |
+| | `AF_YARA_PATH` | yara binary | auto-discovered |
+| | `AF_YARA_RULES_DIR` | YARA rules directory | `~/.af/yara/` |
+| | `AF_EXECUTOR_PATH` | Path to executor binary | auto-discovered |
+| | `AF_EXECUTOR_SHA256` | Expected SHA-256 hash of executor | — |
+| | `AF_ALLOW_UNSANDBOXED` | Skip bwrap sandbox (dev only, unsafe) | — |
+| **VirusTotal** | `AF_VT_API_KEY` | VirusTotal API key | — |
+| | `AF_VT_SOCKET` | VT gateway socket | `/run/af/vt_gateway.sock` |
+| | `AF_VT_RATE_LIMIT` | Requests per minute | `4` |
+| | `AF_VT_CACHE_TTL` | Cache TTL in seconds | `86400` (24h) |
+| **Dynamic Analysis** | `AF_SANDBOX_SOCKET` | UDS path for sandbox gateway | — |
+| | `AF_SANDBOX_QMP` | QMP Unix socket for QEMU VM | — |
+| | `AF_SANDBOX_AGENT` | Guest agent address | `192.168.122.10:9111` |
+| | `AF_SANDBOX_SNAPSHOT` | VM snapshot name | `clean` |
+| **Web Gateway** | `AF_WEB_GATEWAY_SOCKET` | UDS path (enables web.fetch/web.search) | — |
+| **Email** | `AF_EMAIL_RATE_LIMIT` | Global sends per minute | `10` |
+| | `AF_EMAIL_PER_USER_RPM` | Per-user sends per minute | `5` |
+| | `AF_EMAIL_MAX_RECIPIENTS` | Max recipients per email | `50` |
+| | `AF_EMAIL_MAX_BODY_BYTES` | Max email body size | `1048576` (1 MB) |
+| **TOML Extensions** | `AF_TOOLS_DIR` | TOML tool definitions | `~/.af/tools/` |
+| | `AF_AGENTS_DIR` | TOML agent definitions | `~/.af/agents/` |
+| | `AF_WORKFLOWS_DIR` | TOML workflow definitions | `~/.af/workflows/` |
+| | `AF_MODELS_DIR` | TOML model cards | `~/.af/models/` |
+| | `AF_PLUGINS_DIR` | TOML plugins | `~/.af/plugins/` |
+| **Remote CLI** | `AF_REMOTE_URL` | Remote server URL | — |
+| | `AF_API_KEY` | API key for remote access | — |
+
+At least one LLM backend (`AF_LOCAL_ENDPOINT`, `AF_OPENAI_API_KEY`, or `AF_ANTHROPIC_API_KEY`) is required for chat/serve.
+
 ## Tests
 
 ```bash
