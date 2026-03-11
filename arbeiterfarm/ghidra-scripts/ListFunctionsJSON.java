@@ -3,7 +3,7 @@
 // Output: {"program_info":{...}, "functions":[{...}, ...]}
 //
 // NOTE: Uses manual JSON writing to avoid dependency on Gson (not always on classpath).
-//@category Claw
+//@category Arbeiterfarm
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.listing.*;
 import ghidra.program.model.address.*;

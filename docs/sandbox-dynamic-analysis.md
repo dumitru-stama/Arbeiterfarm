@@ -377,7 +377,7 @@ timeout_secs = 300
 ### Using the tracer in a thinking thread
 
 ```bash
-af think --project <project-id> \
+af-re think --project <project-id> \
   --goal "Execute the uploaded sample in the sandbox and identify all behavioral IOCs"
 ```
 

@@ -33,7 +33,7 @@ That is exactly how arbeiterfarm runs tools like Ghidra and rizin.
  LLM Agent                         │   Bubblewrap Sandbox     │
  ─────────                         │                          │
  "I need to analyze                 │  ┌───────────────────┐  │
-  this binary"                      │  │  af-executor  │  │
+  this binary"                      │  │  af-re-executor  │  │
        │                            │  │                    │  │
        v                            │  │  runs rizin/ghidra │  │
  ┌─────────────┐    OOP Protocol    │  │  writes results to │  │
@@ -116,8 +116,8 @@ bwrap \
   --setenv HOME /home/user
 
   # 8. The executor binary itself
-  --ro-bind /path/to/af-executor /path/to/af-executor
-  /path/to/af-executor
+  --ro-bind /path/to/af-re-executor /path/to/af-re-executor
+  /path/to/af-re-executor
 ```
 
 ### What each part does
@@ -175,7 +175,7 @@ The fix: `PrivateLoopback` skips `--unshare-all` entirely but keeps everything e
 
 ### What "Out-of-Process" means
 
-The main af server never runs rizin or Ghidra directly. Instead, it spawns a separate binary (`af-executor`) as a child process, communicates with it over stdin/stdout using a JSON protocol, and collects the results.
+The main af server never runs rizin or Ghidra directly. Instead, it spawns a separate binary (`af-re-executor`) as a child process, communicates with it over stdin/stdout using a JSON protocol, and collects the results.
 
 This is like a manager (the job system) handing a work order to a contractor (the executor). The work order is a JSON document, the contractor works independently, and returns a JSON result.
 
@@ -186,7 +186,7 @@ This is like a manager (the job system) handing a work order to a contractor (th
 When the system first discovers the executor binary, it runs it with `--handshake` to learn what tools it supports:
 
 ```bash
-$ af-executor --handshake
+$ af-re-executor --handshake
 ```
 ```json
 {
@@ -677,7 +677,7 @@ The worker spawns the executor inside bwrap:
 
 ### Step 6: Executor Does the Work
 
-Inside the sandbox, `af-executor`:
+Inside the sandbox, `af-re-executor`:
 - Parses the envelope
 - Dispatches to the right tool function
 - Runs rizin/Ghidra as a subprocess

@@ -1,11 +1,11 @@
 # ghidra.rename — Rename functions in cached Ghidra project
-# Executor: af-executor (OOP protocol)
+# Executor: af-re-executor (OOP protocol)
 # Requires: ghidra.analyze must have been run first on the same artifact
 
 [tool]
 name = "ghidra.rename"
 version = 1
-binary = "/usr/local/bin/af-executor"
+binary = "/usr/local/bin/af-re-executor"
 protocol = "oop"
 description = """Rename functions in the cached Ghidra project so subsequent \
 ghidra.decompile calls show meaningful names. Functions can be \

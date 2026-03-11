@@ -1,11 +1,11 @@
 # ghidra.analyze — Run headless Ghidra analysis on a binary
-# Executor: af-executor (OOP protocol)
+# Executor: af-re-executor (OOP protocol)
 # Requires: Ghidra installed at ghidra_home, Java 17-21
 
 [tool]
 name = "ghidra.analyze"
 version = 1
-binary = "/usr/local/bin/af-executor"
+binary = "/usr/local/bin/af-re-executor"
 protocol = "oop"
 description = """Run headless Ghidra analysis on a binary. Returns function list with \
 addresses, sizes, and calling conventions. Analysis results are cached \

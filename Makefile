@@ -12,10 +12,10 @@
 #   make clean-db        Drop and recreate af database
 #
 # Binaries produced:
-#   af              RE distribution binary (compiled plugin + optional TOML plugins)
-#   af-executor     OOP executor for RE tools (Rizin, Ghidra) in bwrap sandbox
+#   af                  Generic binary (TOML plugins only, no compiled plugins)
+#   af-re               RE distribution binary (compiled plugin + optional TOML plugins)
 #   af-builtin-executor OOP executor for builtin file tools in bwrap sandbox
-#   af                 Generic binary (TOML plugins only, no compiled plugins)
+#   af-re-executor      OOP executor for RE tools (Rizin, Ghidra) in bwrap sandbox
 #
 # Environment:
 #   AF_DATABASE_URL    Postgres connection (default: postgres://af:af@localhost/af)
@@ -78,9 +78,9 @@ OLLAMA_MODEL   ?= gpt-oss
 
 # Binaries
 BIN            := target/release/af
-BIN_GENERIC    := target/release/af
+BIN_RE         := target/release/af-re
 EXECUTOR       := target/release/af-builtin-executor
-RE_EXECUTOR    := target/release/af-executor
+RE_EXECUTOR    := target/release/af-re-executor
 
 # Database
 DB_URL    ?= postgres://af:af@localhost/af
@@ -140,13 +140,13 @@ setup-bwrap: ## Install bubblewrap sandbox
 
 # ─── Build ─────────────────────────────────────────────────────────────────────
 
-build: submodules ## Build release binaries (af, af, executors)
+build: submodules ## Build release binaries (af, af-re, executors)
 	@set -e
 	cargo build --release
 	cp -r arbeiterfarm/ghidra-scripts target/release/ 2>/dev/null || true
 	echo ""
 	echo -e "\033[0;32mBuilt:\033[0m"
-	ls -lh $(BIN) $(BIN_GENERIC) $(EXECUTOR) $(RE_EXECUTOR) 2>/dev/null || echo "  (some binaries missing)"
+	ls -lh $(BIN) $(BIN_RE) $(EXECUTOR) $(RE_EXECUTOR) 2>/dev/null || echo "  (some binaries missing)"
 
 check: submodules ## Fast type check (no codegen)
 	@cargo check --workspace
@@ -181,17 +181,17 @@ test-e2e: build ## Full end-to-end test: Slices 1 + 2 + 3 (needs DB)
 test-slice1: build ## Slice 1: project, artifact, echo.tool
 	@set -e
 	echo -e "\033[0;33m[1/4] Tool list (no DB)...\033[0m"
-	$(BIN) tool list | grep -q "echo.tool"
+	$(BIN_RE) tool list | grep -q "echo.tool"
 	echo "  OK: echo.tool found"
 	echo -e "\033[0;33m[2/4] Create project...\033[0m"
-	PROJECT=$$($(BIN) project create _test_s1_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
+	PROJECT=$$($(BIN_RE) project create _test_s1_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "  Project: $$PROJECT"
 	echo -e "\033[0;33m[3/4] Add artifact...\033[0m"
 	echo "hello from slice 1 make test" > /tmp/_af_s1_test.txt
-	ARTIFACT=$$($(BIN) artifact add /tmp/_af_s1_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
+	ARTIFACT=$$($(BIN_RE) artifact add /tmp/_af_s1_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "  Artifact: $$ARTIFACT"
 	echo -e "\033[0;33m[4/4] Run echo.tool...\033[0m"
-	$(BIN) tool run echo.tool --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\"}" | grep -q "completed"
+	$(BIN_RE) tool run echo.tool --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\"}" | grep -q "completed"
 	echo -e "  \033[0;32mOK: echo.tool completed\033[0m"
 	rm -f /tmp/_af_s1_test.txt
 
@@ -201,28 +201,28 @@ test-slice2: build ## Slice 2: all 5 file tools via OOP executor
 	$(EXECUTOR) --handshake | grep -q "protocol_version"
 	echo "  OK: handshake valid"
 	echo -e "\033[0;33m[2/7] 6 tools registered...\033[0m"
-	TOOL_COUNT=$$($(BIN) tool list | wc -l)
+	TOOL_COUNT=$$($(BIN_RE) tool list | wc -l)
 	if [ "$$TOOL_COUNT" -ge 6 ]; then
 		echo "  OK: $$TOOL_COUNT tools"
 	else
 		echo -e "  \033[0;31mFAIL: only $$TOOL_COUNT tools\033[0m" && exit 1
 	fi
 	echo -e "\033[0;33m[3/7] Create project + artifact...\033[0m"
-	PROJECT=$$($(BIN) project create _test_s2_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
+	PROJECT=$$($(BIN_RE) project create _test_s2_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "Slice 2 file tool testing data with some binary: ABCDEF" > /tmp/_af_s2_test.txt
-	ARTIFACT=$$($(BIN) artifact add /tmp/_af_s2_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
+	ARTIFACT=$$($(BIN_RE) artifact add /tmp/_af_s2_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "  Project: $$PROJECT  Artifact: $$ARTIFACT"
 	echo -e "\033[0;33m[4/7] file.info...\033[0m"
-	$(BIN) tool run file.info --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\"}" | grep -q "completed"
+	$(BIN_RE) tool run file.info --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\"}" | grep -q "completed"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[5/7] file.read_range...\033[0m"
-	$(BIN) tool run file.read_range --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"line_start\":1,\"line_count\":5}" | grep -q "completed"
+	$(BIN_RE) tool run file.read_range --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"line_start\":1,\"line_count\":5}" | grep -q "completed"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[6/7] file.hexdump...\033[0m"
-	$(BIN) tool run file.hexdump --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"offset\":0,\"length\":64}" | grep -q "completed"
+	$(BIN_RE) tool run file.hexdump --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"offset\":0,\"length\":64}" | grep -q "completed"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[7/7] file.grep...\033[0m"
-	$(BIN) tool run file.grep --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"pattern\":\"Slice\",\"context_lines\":1}" | grep -q "completed"
+	$(BIN_RE) tool run file.grep --project $$PROJECT --input "{\"artifact_id\":\"$$ARTIFACT\",\"pattern\":\"Slice\",\"context_lines\":1}" | grep -q "completed"
 	echo -e "  \033[0;32mOK\033[0m"
 	rm -f /tmp/_af_s2_test.txt
 
@@ -231,37 +231,37 @@ test-slice3: build ## Slice 3: CLI commands, redaction, thread ops
 	echo -e "\033[0;33m[1/8] Redaction unit tests...\033[0m"
 	cargo test --package af-llm -- --quiet 2>&1 | tail -1
 	echo -e "\033[0;33m[2/8] Create project + artifact...\033[0m"
-	PROJECT=$$($(BIN) project create _test_s3_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
+	PROJECT=$$($(BIN_RE) project create _test_s3_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "Slice 3 test data" > /tmp/_af_s3_test.txt
-	ARTIFACT=$$($(BIN) artifact add /tmp/_af_s3_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
+	ARTIFACT=$$($(BIN_RE) artifact add /tmp/_af_s3_test.txt --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "  Project: $$PROJECT  Artifact: $$ARTIFACT"
 	echo -e "\033[0;33m[3/8] artifact info...\033[0m"
-	$(BIN) artifact info $$ARTIFACT | grep -q "Filename:"
+	$(BIN_RE) artifact info $$ARTIFACT | grep -q "Filename:"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[4/8] artifact list...\033[0m"
-	$(BIN) artifact list --project $$PROJECT | grep -q "$$ARTIFACT"
+	$(BIN_RE) artifact list --project $$PROJECT | grep -q "$$ARTIFACT"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[5/8] project list...\033[0m"
-	$(BIN) project list | grep -q "$$PROJECT"
+	$(BIN_RE) project list | grep -q "$$PROJECT"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[6/8] thread list (empty)...\033[0m"
-	$(BIN) thread list --project $$PROJECT | grep -q "No threads"
+	$(BIN_RE) thread list --project $$PROJECT | grep -q "No threads"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[7/8] chat --help...\033[0m"
-	$(BIN) chat --help | grep -q "project"
+	$(BIN_RE) chat --help | grep -q "project"
 	echo -e "  \033[0;32mOK\033[0m"
 	echo -e "\033[0;33m[8/8] thread --help...\033[0m"
-	$(BIN) thread --help | grep -q "list"
+	$(BIN_RE) thread --help | grep -q "list"
 	echo -e "  \033[0;32mOK\033[0m"
 	rm -f /tmp/_af_s3_test.txt
 
 test-tools: build ## Run all 5 file tools against a test file (needs DB)
 	@set -e
 	echo -e "\033[0;33mSetting up test data...\033[0m"
-	PROJECT=$$($(BIN) project create _test_tools_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
+	PROJECT=$$($(BIN_RE) project create _test_tools_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "ELF binary header simulation + some text for grep" > /tmp/_af_tools_test.bin
 	printf '\x7fELF\x02\x01\x01' >> /tmp/_af_tools_test.bin
-	ARTIFACT=$$($(BIN) artifact add /tmp/_af_tools_test.bin --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
+	ARTIFACT=$$($(BIN_RE) artifact add /tmp/_af_tools_test.bin --project $$PROJECT 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "  Project: $$PROJECT  Artifact: $$ARTIFACT"
 	echo ""
 	PASS=0; FAIL=0
@@ -274,7 +274,7 @@ test-tools: build ## Run all 5 file tools against a test file (needs DB)
 			file.strings)    INPUT="{\"artifact_id\":\"$$ARTIFACT\",\"min_length\":4}" ;;
 			file.grep)       INPUT="{\"artifact_id\":\"$$ARTIFACT\",\"pattern\":\"ELF\",\"context_lines\":0}" ;;
 		esac
-		if $(BIN) tool run $$TOOL --project $$PROJECT --input "$$INPUT" 2>&1 | grep -q "completed"; then
+		if $(BIN_RE) tool run $$TOOL --project $$PROJECT --input "$$INPUT" 2>&1 | grep -q "completed"; then
 			echo -e "\033[0;32mOK\033[0m"
 			PASS=$$((PASS+1))
 		else
@@ -300,14 +300,14 @@ test-chat: build ## Launch interactive chat (needs DB + LLM backend)
 		exit 1
 	fi
 	echo -e "\033[0;33mCreating test project...\033[0m"
-	PROJECT=$$($(BIN) project create _test_chat_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
+	PROJECT=$$($(BIN_RE) project create _test_chat_$$$$ 2>&1 | grep -oP '[0-9a-f-]{36}')
 	echo "Test file for chat validation" > /tmp/_af_chat_test.txt
-	$(BIN) artifact add /tmp/_af_chat_test.txt --project $$PROJECT > /dev/null
+	$(BIN_RE) artifact add /tmp/_af_chat_test.txt --project $$PROJECT > /dev/null
 	echo -e "\033[0;32mStarting chat\033[0m (project: $$PROJECT)"
 	echo "  Try: 'What can you tell me about the uploaded file?'"
 	echo "  Slash commands: /tools /history /thread /help /quit"
 	echo ""
-	$(BIN) chat --agent default --project $$PROJECT
+	$(BIN_RE) chat --agent default --project $$PROJECT
 	rm -f /tmp/_af_chat_test.txt
 
 # ─── Server (API + UI) ────────────────────────────────────────────────────────
@@ -342,7 +342,7 @@ serve: build ## Start API server with UI (needs DB + at least one LLM backend)
 	echo "  Bind:    $$BIND"
 	echo "  UI:      http://$$BIND/ui/"
 	echo ""
-	$(BIN) serve --bind "$$BIND" --allow-insecure
+	$(BIN_RE) serve --bind "$$BIND" --allow-insecure
 
 serve-local: build ## Start API server with Ollama (localhost:11434)
 	@set -e
@@ -367,7 +367,7 @@ serve-local: build ## Start API server with Ollama (localhost:11434)
 	echo ""
 	echo "  Override model: make serve-local OLLAMA_MODEL=llama3:8b"
 	echo ""
-	$(BIN) serve --bind "$$BIND"
+	$(BIN_RE) serve --bind "$$BIND"
 
 serve-generic: build ## Start generic af (TOML plugins only, no compiled RE plugin)
 	@set -e
@@ -388,9 +388,9 @@ serve-generic: build ## Start generic af (TOML plugins only, no compiled RE plug
 	echo "  Bind:    $$BIND"
 	echo "  UI:      http://$$BIND/ui/"
 	echo ""
-	echo "  To load specific TOML plugins: $(BIN_GENERIC) --plugin <name> serve"
+	echo "  To load specific TOML plugins: $(BIN) --plugin <name> serve"
 	echo ""
-	$(BIN_GENERIC) serve --bind "$$BIND"
+	$(BIN) serve --bind "$$BIND"
 
 # ─── Worker / Tick ────────────────────────────────────────────────────────────
 
@@ -402,12 +402,12 @@ worker: build ## Start background job worker daemon (needs DB)
 	echo "  DB:     $${AF_DATABASE_URL}"
 	$(if $(GHIDRA_HOME),echo "  Ghidra: $(GHIDRA_HOME)";,)
 	echo ""
-	$(BIN) worker start --concurrency 4
+	$(BIN_RE) worker start --concurrency 4
 
 tick: build ## Fire all due tick hooks once and exit (cron-friendly)
 	@set -e
 	echo -e "\033[0;36mFiring due tick hooks...\033[0m"
-	$(BIN) tick
+	$(BIN_RE) tick
 
 # ─── Database ──────────────────────────────────────────────────────────────────
 

@@ -15,7 +15,7 @@ The key idea: **the AI doesn't just talk about analyzing a binary — it actuall
 ```
 ┌────────────────────────────────────────────────────────────────┐
 │                    Distribution Binary                          │
-│  af (compiled RE plugin)  or  af (TOML plugins only)   │
+│  af-re (compiled RE plugin) or af (TOML only)          │
 ├────────────┬──────────┬───────────┬──────────┬─────────────────┤
 │  af-api  │af-agents│ af-jobs │ af-llm │   af-auth    │
 │  HTTP API  │  agent    │ job queue │   LLM    │  API key auth  │
@@ -45,7 +45,7 @@ The key idea: **the AI doesn't just talk about analyzing a binary — it actuall
 Direct Q&A with a specialist agent. The agent uses tools in a loop (up to 20 calls), analyzing results and deciding next steps.
 
 ```bash
-af chat --agent decompiler --project p1
+af-re chat --agent decompiler --project p1
 > "Decompile the main function and explain what it does"
 ```
 
@@ -72,7 +72,7 @@ All agents read the same thread — the decompiler sees what the surface analyst
 An AI research director that decides at runtime which specialists to invoke:
 
 ```bash
-af think --project p1 --goal "Determine if this sample is APT29-related"
+af-re think --project p1 --goal "Determine if this sample is APT29-related"
 ```
 
 The thinker agent has 5 meta-tools:
@@ -180,7 +180,7 @@ Each trace entry records: timestamp, API name, parsed arguments (strings truncat
 |------|-------------|
 | `email.send` | Send email (supports dry_run validation) |
 | `email.draft` | Create draft in provider's drafts folder |
-| `email.schedule` | Schedule future send (processed by `af tick`) |
+| `email.schedule` | Schedule future send (processed by `af-re tick`) |
 | `email.list_inbox` | List recent emails with summaries |
 | `email.read` | Full message body + attachment metadata |
 | `email.reply` | Reply in-thread with proper headers |
@@ -199,7 +199,7 @@ Providers: **Gmail** (REST API, OAuth2 refresh) and **ProtonMail Bridge** (SMTP 
 
 **4 channel types**: Webhook (POST/PUT to HTTPS with custom headers), Email (placeholder — use webhook bridge), Matrix (idempotent PUT via txn_id), WebDAV (artifact blob or text file upload).
 
-**Delivery**: PostgreSQL queue with `pg_notify()` trigger → PgListener in `af serve` for near-real-time delivery. `af tick` as fallback processor (batch of 20). Stale recovery (2 min), retry up to 5 attempts, permanent error detection for config-level failures.
+**Delivery**: PostgreSQL queue with `pg_notify()` trigger → PgListener in `af-re serve` for near-real-time delivery. `af-re tick` as fallback processor (batch of 20). Stale recovery (2 min), retry up to 5 attempts, permanent error detection for config-level failures.
 
 ### Embedding / Vector Search
 
@@ -215,7 +215,7 @@ Providers: **Gmail** (REST API, OAuth2 refresh) and **ProtonMail Bridge** (SMTP 
 | Tool/Feature | Description |
 |------|-------------|
 | URL Import | Managers paste URLs → system fetches, HTML→text, chunks, auto-enqueues for embedding |
-| `af tick` processing | Up to 5 URLs per cycle: HTTPS fetch (5MB limit, 30s timeout) → html2text → artifact → chunk → embed_queue |
+| `af-re tick` processing | Up to 5 URLs per cycle: HTTPS fetch (5MB limit, 30s timeout) → html2text → artifact → chunk → embed_queue |
 | Embed Queue | Background embedding of chunks.json artifacts, batched (100/batch), resumable, retry on failure |
 
 ### Cross-Project Analysis
@@ -596,47 +596,47 @@ Comprehensive command-line interface with ~35 commands:
 
 ```bash
 # Core operations
-af project create/list/delete [--nda]
-af project nda <id> --on|--off
-af project settings <id> [--set key=value]
-af artifact add/list/info/delete
-af chat --project <id> [--agent <name>] [--workflow <name>]
-af think --project <id> --goal "..."
-af conversation list/show/export
+af-re project create/list/delete [--nda]
+af-re project nda <id> --on|--off
+af-re project settings <id> [--set key=value]
+af-re artifact add/list/info/delete
+af-re chat --project <id> [--agent <name>] [--workflow <name>]
+af-re think --project <id> --goal "..."
+af-re conversation list/show/export
 
 # Tool management
-af tool list/run/enable/disable/reload
+af-re tool list/run/enable/disable/reload
 
 # Agent management
-af agent list/show/create/delete/promote
+af-re agent list/show/create/delete/promote
 
 # Administration
-af user create/list
-af user api-key create/list/revoke
-af user routes <user-id> [--add] [--remove]
-af grant tool/revoke/list/restrict/unrestrict
+af-re user create/list
+af-re user api-key create/list/revoke
+af-re user routes <user-id> [--add] [--remove]
+af-re grant tool/revoke/list/restrict/unrestrict
 
 # Web & email rules
-af web-rule add/remove/list/block-country/unblock-country
-af email setup/accounts/tones/scheduled/cancel
-af email-rule add/remove/list
+af-re web-rule add/remove/list/block-country/unblock-country
+af-re email setup/accounts/tones/scheduled/cancel
+af-re email-rule add/remove/list
 
 # Knowledge / RAG
-af url-ingest submit/list/cancel/retry
-af embed-queue list/cancel/retry
+af-re url-ingest submit/list/cancel/retry
+af-re embed-queue list/cancel/retry
 
 # Notifications
-af notify channel add/list/remove/test
-af notify queue list/cancel/retry
+af-re notify channel add/list/remove/test
+af-re notify queue list/cancel/retry
 
 # Ghidra renames
-af ghidra-renames list/suggest/import
+af-re ghidra-renames list/suggest/import
 
 # Operations
-af serve [--bind] [--tls-cert] [--tls-key]
-af worker start [--concurrency N]
-af tick                    # fire all due tick hooks
-af audit list [--limit] [--type]
+af-re serve [--bind] [--tls-cert] [--tls-key]
+af-re worker start [--concurrency N]
+af-re tick                    # fire all due tick hooks
+af-re audit list [--limit] [--type]
 ```
 
 ### Remote CLI Mode
@@ -644,7 +644,7 @@ af audit list [--limit] [--type]
 ```bash
 export AF_REMOTE_URL=https://af.example.com
 export AF_API_KEY=af_xxxx
-af project list    # operates against remote server
+af-re project list    # operates against remote server
 ```
 
 HTTPS enforced by default. `Backend` trait abstracts DirectDb (local PgPool) vs RemoteApi (reqwest + Bearer auth).
@@ -678,14 +678,14 @@ Auto-trigger analysis on events:
 
 ```bash
 # Auto-triage every uploaded artifact
-af hook create \
+af-re hook create \
   --project <id> \
   --event artifact_uploaded \
   --workflow auto-triage \
   --prompt "Analyze artifact {{artifact_id}} ({{filename}}, sha256:{{sha256}})"
 
-# Periodic re-check via cron + `af tick`
-af hook create \
+# Periodic re-check via cron + `af-re tick`
+af-re hook create \
   --event tick \
   --agent intel \
   --interval 1440 \
@@ -729,7 +729,7 @@ Remote CLI ·· HTTPS + Bearer ··→ Load Balancer
 ## Build & Test
 
 ```bash
-cargo build --release            # 4 binaries: af, af, af-builtin-executor, af-executor
+cargo build --release            # 4 binaries: af, af-re, af-builtin-executor, af-re-executor
 cargo test --workspace           # 286+ tests
 make setup-db                    # create af user + database (idempotent)
 make setup-bwrap                 # install bubblewrap sandbox

@@ -1,0 +1,6 @@
+[submodule "oaie"]
+	path = oaie
+	url = https://github.com/dumitru-stama/oaie.git
+[submodule "cwc"]
+	path = cwc
+	url = https://github.com/dumitru-stama/cwc.git

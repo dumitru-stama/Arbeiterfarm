@@ -1,11 +1,11 @@
 # ghidra.decompile — Decompile functions to C pseudocode
-# Executor: af-executor (OOP protocol)
+# Executor: af-re-executor (OOP protocol)
 # Requires: ghidra.analyze must have been run first on the same artifact
 
 [tool]
 name = "ghidra.decompile"
 version = 1
-binary = "/usr/local/bin/af-executor"
+binary = "/usr/local/bin/af-re-executor"
 protocol = "oop"
 description = """Decompile one or more functions to C pseudocode using Ghidra. \
 Requires ghidra.analyze to have been run first. Functions can be \

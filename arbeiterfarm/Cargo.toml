@@ -4,11 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [[bin]]
-name = "af"
+name = "af-re"
 path = "src/main.rs"
 
 [[bin]]
-name = "af-executor"
+name = "af-re-executor"
 path = "src/bin/re_executor.rs"
 
 [dependencies]

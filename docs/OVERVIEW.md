@@ -11,7 +11,7 @@ The framework is domain-agnostic — the core handles projects, artifacts, conve
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Distribution Binary                       │
-│  af (compiled RE plugin)  or  af (TOML plugins only)    │
+│  af-re (compiled RE plugin) or af (TOML only)           │
 ├─────────────────────────────────────────────────────────────────┤
 │                         af-cli                                 │
 │  CLI parsing, bootstrap, plugin runner, backend trait, TOML     │
@@ -89,14 +89,14 @@ The `GET /api/v1/plugins` endpoint returns a plugin inventory — each plugin wi
 
 ## Distribution Binaries
 
-### `af` (Reverse Engineering)
+### `af-re` (Reverse Engineering)
 
-The primary distribution binary. Compiles the RE plugin (Rizin, Ghidra, VirusTotal, IOC, malware families) directly in. Only serves its compiled plugin by default — TOML plugins loaded only when explicitly requested:
+The RE distribution binary. Compiles the RE plugin (Rizin, Ghidra, VirusTotal, IOC, malware families) directly in. Only serves its compiled plugin by default — TOML plugins loaded only when explicitly requested:
 
 ```bash
-af chat --agent surface --project p1     # only RE plugin
-af --plugin fuzzer serve                  # RE + fuzzer TOML plugin
-af serve --bind 0.0.0.0:8080             # RE plugin, HTTP API
+af-re chat --agent surface --project p1     # only RE plugin
+af-re --plugin fuzzer serve                  # RE + fuzzer TOML plugin
+af-re serve --bind 0.0.0.0:8080             # RE plugin, HTTP API
 ```
 
 ### `af` (Generic)
@@ -166,7 +166,7 @@ Both modes use the same agent loop: send messages → get response → if tool c
 ### Single Agent
 
 ```bash
-af chat --agent surface --project p1
+af-re chat --agent surface --project p1
 ```
 
 One agent with its own system prompt, tool allowlist, and LLM route. Runs an independent tool-call loop.
@@ -174,7 +174,7 @@ One agent with its own system prompt, tool allowlist, and LLM route. Runs an ind
 ### Workflow (Multi-Agent)
 
 ```bash
-af chat --workflow full-analysis --project p1
+af-re chat --workflow full-analysis --project p1
 ```
 
 A pipeline of agents organized into groups:
@@ -193,7 +193,7 @@ Group 3: reporter (synthesize findings into report)
 ### Thinking Thread (Autonomous Orchestration)
 
 ```bash
-af think --project p1 --goal "Determine if this sample is APT29-related"
+af-re think --project p1 --goal "Determine if this sample is APT29-related"
 ```
 
 A supervisor "thinker" agent autonomously decides which specialist agents to invoke, reads their results, iterates, and synthesizes findings. Unlike workflows (predefined pipeline), thinking threads let the LLM decide the analysis strategy at runtime.
@@ -342,7 +342,7 @@ Remote CLI ···· HTTPS + Bearer ····→ Load Balancer (same path as web c
 
 Key properties:
 - **Horizontal scaling**: N server instances via `FOR UPDATE SKIP LOCKED` job claiming
-- **Worker daemon**: `af worker start --concurrency N` for standalone worker processes
+- **Worker daemon**: `af-re worker start --concurrency N` for standalone worker processes
 - **TLS**: `--tls-cert`/`--tls-key` or `AF_TLS_CERT`/`AF_TLS_KEY` env vars
 - **CORS**: `AF_CORS_ORIGIN` env var (disabled by default)
 
@@ -416,7 +416,7 @@ GET    /api/v1/health                      # health check (no auth)
 ## Build
 
 ```bash
-cargo build --release    # produces: af, af, af-builtin-executor, af-executor
+cargo build --release    # produces: af, af-re, af-builtin-executor, af-re-executor
 cargo test --workspace   # 303 tests
 make help                # show all targets
 ```

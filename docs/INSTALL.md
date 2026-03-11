@@ -88,21 +88,21 @@ This produces three binaries in `target/release/`:
 
 | Binary | Purpose |
 |---|---|
-| `af` | Main CLI and API server |
+| `af` | Generic CLI and API server (TOML plugins only) |
+| `af-re` | RE distribution binary (compiled RE plugin + TOML plugins) |
 | `af-builtin-executor` | Sandboxed executor for file analysis tools |
-| `af-executor` | Sandboxed executor for RE tools (rizin, Ghidra, VT, IOC) |
+| `af-re-executor` | Sandboxed executor for RE tools (rizin, Ghidra, VT, IOC) |
 
 Optionally install them into your PATH:
 
 ```bash
-sudo cp target/release/af /usr/local/bin/
-sudo cp target/release/af-builtin-executor /usr/local/bin/
-sudo cp target/release/af-executor /usr/local/bin/
+sudo cp target/release/af target/release/af-re /usr/local/bin/
+sudo cp target/release/af-builtin-executor target/release/af-re-executor /usr/local/bin/
 ```
 
 The main binary discovers executor binaries in this order:
 1. `AF_EXECUTOR_PATH` environment variable
-2. Same directory as the `af` binary
+2. Same directory as the `af-re` binary
 3. `$PATH` lookup
 
 ---
@@ -158,7 +158,7 @@ The primary model (from `AF_OPENAI_MODEL` / `AF_ANTHROPIC_MODEL`) is registered 
 
 ```bash
 # Route an agent to a specific model
-af agent create --name "fast-triage" \
+af-re agent create --name "fast-triage" \
   --tools "file.*,rizin.bininfo" \
   --route "backend:openai:gpt-4o-mini" \
   --prompt "Quick triage only."
@@ -251,7 +251,7 @@ Web tools are **restricted by default** — users need an admin grant before the
 
 ```bash
 # Grant a user access to web tools
-af grant tool <user-id> "web.*"
+af-re grant tool <user-id> "web.*"
 ```
 
 ---
@@ -260,10 +260,10 @@ af grant tool <user-id> "web.*"
 
 ```bash
 # List registered tools (works without DB or LLM)
-af tool list
+af-re tool list
 
 # Check DB connectivity
-af project list
+af-re project list
 
 # Run tests
 cargo test --workspace
@@ -280,17 +280,17 @@ The web UI is included in the `ui/` directory and requires no build step. You ne
 Start the API server **from the repository root** (so the `ui/` directory is found):
 
 ```bash
-af serve --bind 127.0.0.1:8080
+af-re serve --bind 127.0.0.1:8080
 # Open http://localhost:8080
 ```
 
 Create an admin user and API key to log in:
 
 ```bash
-af user create --name admin --roles admin
+af-re user create --name admin --roles admin
 # Note the user ID printed
 
-af user api-key create --user <user-id> --name "browser"
+af-re user api-key create --user <user-id> --name "browser"
 # Copy the raw key (shown once) and paste it into the login screen
 ```
 

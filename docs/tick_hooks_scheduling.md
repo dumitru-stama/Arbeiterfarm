@@ -42,7 +42,7 @@ This document provides a detailed reference for Arbeiterfarm's background proces
 Arbeiterfarm uses a **cron-driven tick model** rather than persistent background daemons. All periodic work is performed by a single CLI command:
 
 ```
-af tick
+af-re tick
 ```
 
 This command is designed to be called from cron every minute. Each invocation performs a fixed sequence of maintenance tasks, processes background queues, and fires any due hooks. The process exits after completing all work.
@@ -76,7 +76,7 @@ Separately, the **job queue** (tool execution) uses a persistent worker process 
 
 ```bash
 # Run once (typical usage from cron)
-af tick
+af-re tick
 
 # Crontab entry (every minute)
 * * * * * /usr/local/bin/af tick
@@ -186,7 +186,7 @@ Delivers pending notifications via configured channels (webhook, email, matrix, 
 - **Batch limit**: 20 items per tick (notifications are fast)
 - **Stale recovery**: Items stuck in `processing` for > 2 minutes
 - **Delivery**: Webhook (POST), email (Gmail/ProtonMail), Matrix (HTTP PUT), WebDAV (HTTP PUT)
-- **Near-real-time**: Also delivered via PgListener in `af serve` (tick is fallback)
+- **Near-real-time**: Also delivered via PgListener in `af-re serve` (tick is fallback)
 
 #### 9. Project Hooks (Tick Events)
 
@@ -354,7 +354,7 @@ Two variants exist for each event type:
 | `fire_artifact_hooks()` | Non-blocking (spawn and return) | API server (upload handler) |
 | `fire_artifact_hooks_blocking()` | Waits for all hooks to complete | CLI upload |
 | `fire_tick_hooks()` | Non-blocking | API server (if needed) |
-| `fire_tick_hooks_blocking()` | Waits for all hooks to complete | `af tick` CLI |
+| `fire_tick_hooks_blocking()` | Waits for all hooks to complete | `af-re tick` CLI |
 
 #### Max Hooks Per Event
 
@@ -447,17 +447,17 @@ All fields are optional. Setting `route_override` to `null` removes the override
 
 ```bash
 # List hooks for a project
-af hook list --project <PROJECT_ID>
+af-re hook list --project <PROJECT_ID>
 
 # Create an artifact_uploaded hook
-af hook create --project <PROJECT_ID> \
+af-re hook create --project <PROJECT_ID> \
   --name "auto-triage" \
   --event artifact_uploaded \
   --workflow full-analysis \
   --template "Triage {{filename}}"
 
 # Create a tick hook (fires every 60 minutes)
-af hook create --project <PROJECT_ID> \
+af-re hook create --project <PROJECT_ID> \
   --name "hourly-scan" \
   --event tick \
   --agent researcher \
@@ -465,12 +465,12 @@ af hook create --project <PROJECT_ID> \
   --template "Check for new threats related to project {{project_name}}"
 
 # Update a hook
-af hook update <HOOK_ID> --enabled false
-af hook update <HOOK_ID> --template "New template: {{filename}}"
-af hook update <HOOK_ID> --interval 120
+af-re hook update <HOOK_ID> --enabled false
+af-re hook update <HOOK_ID> --template "New template: {{filename}}"
+af-re hook update <HOOK_ID> --interval 120
 
 # Delete a hook
-af hook delete <HOOK_ID>
+af-re hook delete <HOOK_ID>
 ```
 
 ### Hooks Examples
@@ -480,7 +480,7 @@ af hook delete <HOOK_ID>
 Automatically run the full analysis workflow when a new binary is uploaded:
 
 ```bash
-af hook create --project $PROJECT_ID \
+af-re hook create --project $PROJECT_ID \
   --name "auto-analyze" \
   --event artifact_uploaded \
   --workflow full-analysis \
@@ -499,7 +499,7 @@ When a user uploads `malware.exe`, the hook:
 Every 4 hours, query for new threat intelligence:
 
 ```bash
-af hook create --project $PROJECT_ID \
+af-re hook create --project $PROJECT_ID \
   --name "threat-intel-refresh" \
   --event tick \
   --agent researcher \
@@ -515,7 +515,7 @@ the malware families tracked in this project. Summarize findings."
 Generate a daily summary using the reporter agent:
 
 ```bash
-af hook create --project $PROJECT_ID \
+af-re hook create --project $PROJECT_ID \
   --name "daily-summary" \
   --event tick \
   --agent reporter \
@@ -608,7 +608,7 @@ WHERE id = $1 AND status = 'failed'
 
 1. An agent calls `email.schedule` with a future send time
 2. The email is stored in the `email_scheduled` table with status `pending`
-3. `af tick` calls `process_due_emails()` which:
+3. `af-re tick` calls `process_due_emails()` which:
    - Lists up to 50 due emails (`send_at <= NOW()` and status = `pending`)
    - For each email:
      a. **Atomically claims** it (`claim_scheduled` — pending → processing)
@@ -643,7 +643,7 @@ match af_db::email::list_recipient_rules(pool, None, Some(scheduled.project_id))
 # "Schedule a report email for Monday at 9am"
 
 # The agent calls email.schedule which stores to DB.
-# On Monday at 9am, the next `af tick` picks it up and sends it.
+# On Monday at 9am, the next `af-re tick` picks it up and sends it.
 ```
 
 ### URL Ingestion Queue
@@ -714,17 +714,17 @@ URL validation in the POST handler:
 
 ```bash
 # Submit URLs for ingestion
-af url-ingest submit <PROJECT_ID> https://example.com/blog https://docs.example.com/guide
+af-re url-ingest submit <PROJECT_ID> https://example.com/blog https://docs.example.com/guide
 
 # List queue items
-af url-ingest list --project <PROJECT_ID>
-af url-ingest list --project <PROJECT_ID> --status failed
+af-re url-ingest list --project <PROJECT_ID>
+af-re url-ingest list --project <PROJECT_ID> --status failed
 
 # Cancel a pending item
-af url-ingest cancel <QUEUE_ID>
+af-re url-ingest cancel <QUEUE_ID>
 
 # Retry a failed item
-af url-ingest retry <QUEUE_ID>
+af-re url-ingest retry <QUEUE_ID>
 ```
 
 ### Embedding Queue
@@ -808,15 +808,15 @@ If no embedding backend is configured, the entire step is silently skipped.
 
 ```bash
 # List embed queue items
-af embed-queue list
-af embed-queue list --project <PROJECT_ID>
-af embed-queue list --status pending
+af-re embed-queue list
+af-re embed-queue list --project <PROJECT_ID>
+af-re embed-queue list --status pending
 
 # Cancel a pending item
-af embed-queue cancel <QUEUE_ID>
+af-re embed-queue cancel <QUEUE_ID>
 
 # Retry a failed item
-af embed-queue retry <QUEUE_ID>
+af-re embed-queue retry <QUEUE_ID>
 ```
 
 ### Notification Queue
@@ -834,9 +834,9 @@ af embed-queue retry <QUEUE_ID>
 
 Unlike the other queues which rely solely on tick for processing, notifications use a **dual delivery model**:
 
-1. **Near-real-time (PgListener)**: A `pg_notify()` trigger on `notification_queue` INSERT fires a PostgreSQL notification. When `af serve` is running, a PgListener task picks up new items and delivers them immediately (typically < 1 second).
+1. **Near-real-time (PgListener)**: A `pg_notify()` trigger on `notification_queue` INSERT fires a PostgreSQL notification. When `af-re serve` is running, a PgListener task picks up new items and delivers them immediately (typically < 1 second).
 
-2. **Fallback (tick)**: `af tick` processes any pending items that the PgListener missed (server not running, delivery failure, PgListener reconnecting).
+2. **Fallback (tick)**: `af-re tick` processes any pending items that the PgListener missed (server not running, delivery failure, PgListener reconnecting).
 
 ```
 Agent calls notify.send ──→ INSERT into notification_queue
@@ -913,7 +913,7 @@ All per-item DB operations are non-fatal — a failure on one item doesn't preve
 
 #### PgListener (Near-Real-Time)
 
-When `af serve` is running, a background task listens for PostgreSQL notifications:
+When `af-re serve` is running, a background task listens for PostgreSQL notifications:
 
 ```rust
 pub async fn run_notification_listener(
@@ -962,15 +962,15 @@ Config validation per channel type:
 
 ```bash
 # Channel management
-af notify channel add <PROJECT_ID> <NAME> <TYPE> --config '{"url":"https://..."}'
-af notify channel list <PROJECT_ID>
-af notify channel remove <CHANNEL_ID>
-af notify channel test <CHANNEL_ID>
+af-re notify channel add <PROJECT_ID> <NAME> <TYPE> --config '{"url":"https://..."}'
+af-re notify channel list <PROJECT_ID>
+af-re notify channel remove <CHANNEL_ID>
+af-re notify channel test <CHANNEL_ID>
 
 # Queue management
-af notify queue list [--project <UUID>] [--status pending|completed|failed]
-af notify queue cancel <UUID>
-af notify queue retry <UUID>
+af-re notify queue list [--project <UUID>] [--status pending|completed|failed]
+af-re notify queue cancel <UUID>
+af-re notify queue retry <UUID>
 ```
 
 ---
@@ -1076,7 +1076,7 @@ The worker uses a layered security model:
 
 ### Multiple Tick Processes
 
-It's safe to run multiple `af tick` processes concurrently (e.g., cron overlap). Each queue system uses atomic claiming:
+It's safe to run multiple `af-re tick` processes concurrently (e.g., cron overlap). Each queue system uses atomic claiming:
 
 | System | Claiming Mechanism |
 |--------|--------------------|
@@ -1161,12 +1161,12 @@ All queues handle crashed workers:
 
 ```bash
 # Check all queues
-af embed-queue list --status pending
-af embed-queue list --status failed
-af url-ingest list --status pending
-af url-ingest list --status failed
-af notify queue list --status pending
-af notify queue list --status failed
+af-re embed-queue list --status pending
+af-re embed-queue list --status failed
+af-re url-ingest list --status pending
+af-re url-ingest list --status failed
+af-re notify queue list --status pending
+af-re notify queue list --status failed
 
 # Retry all failed items in a project
 for id in $(af embed-queue list --project $PID --status failed | awk '{print $1}'); do
@@ -1178,31 +1178,31 @@ done
 
 ```bash
 # 1. Submit URLs
-af url-ingest submit $PROJECT_ID \
+af-re url-ingest submit $PROJECT_ID \
     https://blog.example.com/malware-analysis-guide \
     https://docs.example.com/threat-intel-2024
 
 # 2. Check queue status
-af url-ingest list --project $PROJECT_ID
+af-re url-ingest list --project $PROJECT_ID
 # ID                                   | URL                                    | STATUS  | CHUNKS | TITLE
 # a1b2c3d4-...                        | https://blog.example.com/malware-a...  | pending |   —    |  —
 
 # 3. Run tick (fetches URLs, converts, chunks, enqueues for embedding)
-af tick
+af-re tick
 # [tick] ingested 2 URL(s)
 
 # 4. Check again
-af url-ingest list --project $PROJECT_ID
+af-re url-ingest list --project $PROJECT_ID
 # ID                                   | URL                                    | STATUS    | CHUNKS | TITLE
 # a1b2c3d4-...                        | https://blog.example.com/malware-a...  | completed |   45   | Malware Analysis Guide
 
 # 5. Check embed queue (chunks are now enqueued)
-af embed-queue list --project $PROJECT_ID
+af-re embed-queue list --project $PROJECT_ID
 # ID                                   | STATUS  | CHUNKS | EMBEDDED | TOOL
 # e5f6g7h8-...                        | pending |   45   |    0     | url.ingest
 
 # 6. Run tick again (embeds the chunks)
-af tick
+af-re tick
 # [tick] embedded 1 queued chunk set(s)
 
 # 7. Content is now searchable via embed.search
@@ -1216,7 +1216,7 @@ Combine hooks with background processing for a fully automated RE pipeline:
 
 ```bash
 # 1. Create auto-analyze hook (fires on upload)
-af hook create --project $PROJECT_ID \
+af-re hook create --project $PROJECT_ID \
     --name "auto-analyze" \
     --event artifact_uploaded \
     --workflow full-analysis \
@@ -1224,7 +1224,7 @@ af hook create --project $PROJECT_ID \
 Run surface analysis, decompile key functions, extract IOCs, and write a report."
 
 # 2. Create daily summary hook (fires every 24 hours)
-af hook create --project $PROJECT_ID \
+af-re hook create --project $PROJECT_ID \
     --name "daily-summary" \
     --event tick \
     --agent reporter \

@@ -1,11 +1,11 @@
 # rizin.disasm — Disassemble an address range
-# Executor: af-executor (OOP protocol)
+# Executor: af-re-executor (OOP protocol)
 # Requires: rizin installed at the path specified in context_extra
 
 [tool]
 name = "rizin.disasm"
 version = 1
-binary = "/usr/local/bin/af-executor"
+binary = "/usr/local/bin/af-re-executor"
 protocol = "oop"
 description = "Disassemble an address range using rizin"
 output_redirect = "Allowed"

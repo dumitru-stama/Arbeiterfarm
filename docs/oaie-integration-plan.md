@@ -181,7 +181,7 @@ OAIE supports extra RO mounts. Map AF's `uds_bind_mounts` (for VT gateway, web g
 | `execute_oop()` dispatch | Yes | Add OAIE path |
 | `SandboxProfile` enum | No | Maps to OAIE policies |
 | `bwrap_available()` | Augmented | Add `oaie_available()` |
-| Executor binaries | No | `af-builtin-executor`, `af-executor` unchanged |
+| Executor binaries | No | `af-builtin-executor`, `af-re-executor` unchanged |
 
 ### 1.8 Gains from Phase 1
 
@@ -337,7 +337,7 @@ Result back to agent
 
 ## Compatibility Notes
 
-- **Executor binaries unchanged**: `af-builtin-executor` and `af-executor` still read OopEnvelope from stdin, write OopResponse to stdout. OAIE just wraps their execution.
+- **Executor binaries unchanged**: `af-builtin-executor` and `af-re-executor` still read OopEnvelope from stdin, write OopResponse to stdout. OAIE just wraps their execution.
 - **bwrap kept as fallback**: `AF_SANDBOX_BACKEND=bwrap` for systems where OAIE isn't available.
 - **Trusted profile unchanged**: in-process tools (`email.*`, `notify.*`, `re-ioc.*`) skip sandbox entirely.
 - **OAIE store is separate**: OAIE's CAS at `AF_OAIE_STORE` is independent from AF's blob storage. Provenance artifacts get ingested into AF's storage in Phase 2.

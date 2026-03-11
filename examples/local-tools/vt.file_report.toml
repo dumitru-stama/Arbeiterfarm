@@ -1,11 +1,11 @@
 # vt.file_report — VirusTotal hash lookup via UDS gateway
-# Executor: af-executor (OOP protocol)
+# Executor: af-re-executor (OOP protocol)
 # Requires: VT gateway daemon running at the socket path
 
 [tool]
 name = "vt.file_report"
 version = 1
-binary = "/usr/local/bin/af-executor"
+binary = "/usr/local/bin/af-re-executor"
 protocol = "oop"
 description = "Look up a file hash on VirusTotal. Returns detection ratio, tags, family names, and first-seen date. Hash-only lookup — no file upload."
 output_redirect = "Forbidden"

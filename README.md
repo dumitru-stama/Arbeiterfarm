@@ -22,7 +22,7 @@ The first distribution built on this SDK is **Reverse-Arbeiterfarm**: an AI-powe
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    Distribution Binary                       │
-│  arbeiterfarm (compiled RE plugin) or af-app (TOML only)    │
+│  af-re (compiled RE plugin) or af (TOML only)               │
 ├──────────┬──────────┬───────────┬──────────┬────────────────┤
 │  af-api  │af-agents │  af-jobs  │  af-llm  │   af-auth      │
 │  HTTP    │  agent   │ job queue │   LLM    │  API key auth  │
@@ -59,7 +59,7 @@ The first distribution built on this SDK is **Reverse-Arbeiterfarm**: an AI-powe
 cargo build --release
 ```
 
-Produces three binaries: `af` (main CLI + API server), `af-builtin-executor`, `af-executor`.
+Produces four binaries: `af` (generic CLI + API server), `af-re` (RE distribution with compiled plugins), `af-builtin-executor`, `af-re-executor`.
 
 ### Setup
 
@@ -76,7 +76,7 @@ export AF_LOCAL_MODEL="llama3"
 export AF_OPENAI_API_KEY="sk-..."
 
 # Verify
-af tool list
+af-re tool list
 ```
 
 For persistent configuration, edit `Makefile.local` (auto-generated on first `make` run, gitignored). It holds API keys, model names, and tool paths so you don't need to export env vars every session. See [Development](#development) below.
@@ -85,20 +85,20 @@ For persistent configuration, edit `Makefile.local` (auto-generated on first `ma
 
 ```bash
 # Create a project and upload a sample
-af project create malware-sample-42
-af artifact add suspicious.exe --project <project-id>
+af-re project create malware-sample-42
+af-re artifact add suspicious.exe --project <project-id>
 
 # Interactive analysis
-af chat --project <project-id>
+af-re chat --project <project-id>
 
 # Run a multi-agent workflow
-af chat --workflow full-analysis --project <project-id>
+af-re chat --workflow full-analysis --project <project-id>
 
 # Autonomous thinking thread
-af think --project <project-id> --goal "Determine if this is APT29-related"
+af-re think --project <project-id> --goal "Determine if this is APT29-related"
 
 # Start the web UI
-af serve --bind 127.0.0.1:8080
+af-re serve --bind 127.0.0.1:8080
 # Open http://localhost:8080
 ```
 
@@ -107,8 +107,8 @@ af serve --bind 127.0.0.1:8080
 Create an admin user to log in:
 
 ```bash
-af user create --name admin --roles admin
-af user api-key create --user <user-id> --name "browser"
+af-re user create --name admin --roles admin
+af-re user api-key create --user <user-id> --name "browser"
 # Paste the key into the login screen
 ```
 

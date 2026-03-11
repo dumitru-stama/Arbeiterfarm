@@ -63,16 +63,16 @@ impl RePluginConfig {
     /// Build config from environment variables. `exe_dir` is used for executor/scripts discovery.
     pub fn from_env(exe_dir: &std::path::Path) -> Self {
         let allow_unsandboxed = std::env::var("AF_ALLOW_UNSANDBOXED").is_ok();
-        let executor_path = find_executor("af-executor", exe_dir);
+        let executor_path = find_executor("af-re-executor", exe_dir);
 
         if executor_path.is_some() {
             eprintln!("[af] RE executor found, tools will run in bwrap sandbox");
         } else if allow_unsandboxed {
-            eprintln!("[af] WARNING: af-executor not found; running InProcess (AF_ALLOW_UNSANDBOXED set)");
+            eprintln!("[af] WARNING: af-re-executor not found; running InProcess (AF_ALLOW_UNSANDBOXED set)");
         } else {
             eprintln!(
-                "[af] RE tools DISABLED: af-executor not found and AF_ALLOW_UNSANDBOXED not set. \
-                 Install af-executor or set AF_ALLOW_UNSANDBOXED=1."
+                "[af] RE tools DISABLED: af-re-executor not found and AF_ALLOW_UNSANDBOXED not set. \
+                 Install af-re-executor or set AF_ALLOW_UNSANDBOXED=1."
             );
         }
 
@@ -220,7 +220,7 @@ impl Plugin for RePlugin {
         } else if self.has_rizin() {
             eprintln!(
                 "[af] RE tools DISABLED: no sandbox available. \
-                 Install af-executor or set AF_ALLOW_UNSANDBOXED=1"
+                 Install af-re-executor or set AF_ALLOW_UNSANDBOXED=1"
             );
         } else {
             eprintln!(
@@ -264,7 +264,7 @@ impl Plugin for RePlugin {
         } else if self.has_ghidra() {
             eprintln!(
                 "[af] Ghidra tools DISABLED: no sandbox available. \
-                 Install af-executor or set AF_ALLOW_UNSANDBOXED=1"
+                 Install af-re-executor or set AF_ALLOW_UNSANDBOXED=1"
             );
         } else if self.config.ghidra_home.is_none() {
             eprintln!("[af] Ghidra tools disabled (set AF_GHIDRA_HOME to enable)");
@@ -280,7 +280,7 @@ impl Plugin for RePlugin {
             } else {
                 eprintln!(
                     "[af] VT tools DISABLED: no sandbox available. \
-                     Install af-executor or set AF_ALLOW_UNSANDBOXED=1"
+                     Install af-re-executor or set AF_ALLOW_UNSANDBOXED=1"
                 );
             }
         } else {
@@ -306,7 +306,7 @@ impl Plugin for RePlugin {
         } else if self.has_yara() {
             eprintln!(
                 "[af] YARA tools DISABLED: no sandbox available. \
-                 Install af-executor or set AF_ALLOW_UNSANDBOXED=1"
+                 Install af-re-executor or set AF_ALLOW_UNSANDBOXED=1"
             );
         } else {
             eprintln!(

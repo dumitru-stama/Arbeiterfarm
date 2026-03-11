@@ -12,7 +12,7 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
 |---|---|---|---|
 | `email.send` | Compose and send (supports dry_run validation) | 5 | 30s |
 | `email.draft` | Create draft in provider's drafts folder | 10 | 30s |
-| `email.schedule` | Schedule email for future send (processed by `af tick`) | 5 | 15s |
+| `email.schedule` | Schedule email for future send (processed by `af-re tick`) | 5 | 15s |
 | `email.list_inbox` | List recent emails with summaries | 5 | 30s |
 | `email.read` | Fetch full message body + attachment metadata | 10 | 30s |
 | `email.reply` | Reply (or reply-all) in-thread with proper headers | 5 | 30s |
@@ -22,12 +22,12 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
 - **Providers**: Gmail (REST API with OAuth2 token refresh, base64url RFC 2822 messages) and ProtonMail Bridge (lettre SMTP, localhost plain transport; IMAP stubs for future implementation)
 - **Recipient restrictions**: DB-backed allowlist/blocklist — exact_email, domain, domain_suffix patterns. Block-wins semantics (identical to web fetch rules). Global + project-scoped. Fail-closed on DB errors
 - **Tone presets**: 8 builtins (brief, formal, informal, technical, executive_summary, friendly, urgent, diplomatic) + custom presets. Validated at tool call time, recorded in email_log. Builtins protected from overwrite
-- **Scheduling**: `email.schedule` → DB row → `af tick` polls due emails → atomic claim → re-check recipient rules → send → retry on failure (up to max_attempts)
+- **Scheduling**: `email.schedule` → DB row → `af-re tick` polls due emails → atomic claim → re-check recipient rules → send → retry on failure (up to max_attempts)
 - **Rate limiting**: token-bucket (global + per-user), configurable via `AF_EMAIL_RATE_LIMIT` / `AF_EMAIL_PER_USER_RPM`
 - **Security**: `email.*` restricted by default (requires admin grant), Gmail message IDs sanitized (alphanumeric-only), URL parameters encoded, body size limits enforced, credentials never in output/logs
 - **Logging**: email_log (operational) + audit_log (immutable) + tracing (structured) — all three fire on every operation
 - **Agent**: `email-composer` — `["email.*"]`, budget 20, timeout 300s. Prefers drafts before sending
-- **CLI**: `af email setup/accounts/remove-account/tones/scheduled/cancel`, `af email-rule add/remove/list`
+- **CLI**: `af-re email setup/accounts/remove-account/tones/scheduled/cancel`, `af-re email-rule add/remove/list`
 - **DB**: migration 030 — 5 tables (email_recipient_rules, email_tone_presets, email_scheduled, email_log, email_credentials), partial unique index for global rules
 - **Crate**: `af/crates/af-email/` — 12 source files, 9 unit tests
 - **Use cases**: summarize unread emails, draft responses, phishing triage workflows, automated report delivery, scheduled digests
@@ -47,12 +47,12 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
   - **Email**: placeholder (not yet integrated with af-email; recommends webhook-to-email bridge)
   - **Matrix**: PUT to `/_matrix/client/v3/rooms/{room_id}/send/m.room.message/{txn_id}`, percent-encoded room_id, Bearer auth, idempotent via queue ID as txn_id, 15s timeout
   - **WebDAV**: artifact blob upload or text notification as `.txt` file, basic auth, 60s timeout, 256 MB upload limit, filename sanitization
-- **Queue**: PostgreSQL-backed state machine (pending → processing → completed/failed/cancelled) with pg_notify trigger for near-real-time delivery. `notification_channels` + `notification_queue` tables (migration 036). PgListener in `af serve` delivers immediately; `af tick` as fallback processor (batch of 20, 2-minute stale recovery)
+- **Queue**: PostgreSQL-backed state machine (pending → processing → completed/failed/cancelled) with pg_notify trigger for near-real-time delivery. `notification_channels` + `notification_queue` tables (migration 036). PgListener in `af-re serve` delivers immediately; `af-re tick` as fallback processor (batch of 20, 2-minute stale recovery)
 - **Permanent vs transient errors**: `PermanentError` type for config-level failures (email not integrated, unsupported channel type) — skips retry, sets status to `failed` immediately. Transient failures retry up to `max_attempts=5`
 - **Security**: HTTPS enforcement at creation + delivery time, webhook header blocklist (Host/Content-Length/Cookie/Proxy-Authorization), no redirect following, credential leak prevention in error messages, input length validation (channel name 1-100, subject 1-500, body max 100KB), WebDAV filename sanitization, `notify.*` seeded as restricted tool (admin grant required)
 - **API**: 8 endpoints under `/projects/{id}/notification-channels` and `/projects/{id}/notifications` — create/list/update/delete channels (Manager+), test channel, list/cancel/retry queue (Viewer+ for list, Manager+ for mutations). Config JSON intentionally omitted from API responses (may contain secrets). Project-scoped DB operations for defense-in-depth
 - **Agent**: `notifier` — `["notify.*"]`, budget 10, timeout 120s. Lists channels, sends notifications
-- **CLI**: `af notify channel add/list/remove/test`, `af notify queue list/cancel/retry`
+- **CLI**: `af-re notify channel add/list/remove/test`, `af-re notify queue list/cancel/retry`
 - **UI**: Notifications page (`#/notifications`) — project selector, channels table with Test/Delete, add channel dialog with type-specific config fields, queue table with Cancel/Retry
 - **DB**: migration 036 — 2 tables (notification_channels, notification_queue), 3 indexes, pg_notify trigger, restricted_tools seed
 - **Crate**: `af/crates/af-notify/` — 7 source files (lib.rs, specs.rs, executor.rs, channels.rs, queue.rs, listener.rs)
@@ -72,10 +72,10 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
 | `doc.ocr` | Image or scanned PDF → text (via tesseract) | Not implemented |
 | `doc.metadata` | Extract document metadata (author, dates, revision history) | Not implemented |
 
-- **Architecture**: 3 OOP-sandboxed tools in `af-re-tools` crate (`doc_parse.rs`, `doc_chunk.rs`, `doc_ingest.rs`), dispatched by `af-executor`
+- **Architecture**: 3 OOP-sandboxed tools in `af-re-tools` crate (`doc_parse.rs`, `doc_chunk.rs`, `doc_ingest.rs`), dispatched by `af-re-executor`
 - **Format detection**: magic bytes + extension-based (PDF magic `%PDF`, DOCX/XLSX/EPUB ZIP magic with manifest sniffing). 11+ formats supported
 - **Chunking**: smart boundary detection (paragraph `\n\n` > line `\n` > sentence `. ` > word ` ` > hard cut), 100-10000 byte chunks, configurable overlap, UTF-8 char-boundary safe, max 10,000 chunks
-- **Auto-embedding**: `doc.ingest` produces `parsed_text.txt` + `chunks.json`. The OOP executor auto-enqueues `chunks.json` to `embed_queue` when `tool_name.starts_with("doc.")` — background embedding via `af tick`, searchable via `embed.search`
+- **Auto-embedding**: `doc.ingest` produces `parsed_text.txt` + `chunks.json`. The OOP executor auto-enqueues `chunks.json` to `embed_queue` when `tool_name.starts_with("doc.")` — background embedding via `af-re tick`, searchable via `embed.search`
 - **Security**: 64 MB max text output, bounded reads for DOCX/EPUB ZIP entries, PDF page range selection
 - **Sandbox**: NoNetReadOnly (file access only, no network)
 - **Tests**: 14 unit tests (format detection, extraction, chunking boundaries, overlap, UTF-8 safety, infinite loop prevention)
@@ -86,12 +86,12 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
 
 **Implemented**:
 - **Document tools**: `doc.parse`, `doc.chunk`, `doc.ingest` — full document-to-embedding pipeline
-- **URL ingestion pipeline**: `url_ingest_queue` table (migration 035) + `process_url_queue()` processor in `af tick`. Managers submit URLs (API or CLI) → HTTPS fetch (5MB, 30s timeout) → html2text → store text artifact → shared chunking algorithm → store chunks.json → auto-enqueue in `embed_queue` → background embedding → searchable via `embed.search`
+- **URL ingestion pipeline**: `url_ingest_queue` table (migration 035) + `process_url_queue()` processor in `af-re tick`. Managers submit URLs (API or CLI) → HTTPS fetch (5MB, 30s timeout) → html2text → store text artifact → shared chunking algorithm → store chunks.json → auto-enqueue in `embed_queue` → background embedding → searchable via `embed.search`
 - **Shared chunking module**: `af-builtin-tools/src/chunking.rs` — extracted from `doc_chunk.rs` for reuse by URL ingest and embed queue
-- **Embed queue management**: Admin API endpoints (`/admin/embed-queue`) + CLI (`af embed-queue list/cancel/retry`) + UI page
+- **Embed queue management**: Admin API endpoints (`/admin/embed-queue`) + CLI (`af-re embed-queue list/cancel/retry`) + UI page
 - **Knowledge agent TOML**: `examples/local-agents/knowledge.toml` — `["doc.parse", "doc.chunk", "doc.ingest", "embed.*", "file.*", "artifact.describe"]`, budget 25, timeout 600s. Ingestion + question-answering workflow with source citation
 - **UI**: Knowledge page combines URL import form + URL ingest queue + embed queue status
-- **CLI**: `af url-ingest submit/list/cancel/retry`
+- **CLI**: `af-re url-ingest submit/list/cancel/retry`
 
 **Not yet implemented**:
 - `doc.ocr` — image/scanned PDF text extraction (requires tesseract)
@@ -307,7 +307,7 @@ Proposed agents and tool families to make Arbeiterfarm a comprehensive multi-age
 | `transform.convert` | Bidirectional conversion: JSON ↔ YAML ↔ TOML ↔ XML via serde |
 | `transform.regex` | Extract patterns with named capture groups. 2 MB regex compiled size limit, configurable max_matches |
 
-- **Architecture**: 6 pure-Rust modules in `af-re-tools` crate, all in `af-executor` OOP binary. No external binaries needed
+- **Architecture**: 6 pure-Rust modules in `af-re-tools` crate, all in `af-re-executor` OOP binary. No external binaries needed
 - **Sandbox**: NoNetReadOnly (pure data transformation, no network, no writes outside scratch_dir)
 - **Security**: decompression bomb protection (256 MB `.take()` limit), archive bomb protection (pre-flight declared size validation for 7z, per-file + total byte limits), path traversal rejection, regex DoS prevention (2 MB compiled size limit), jq output cap (64 MB), XOR key validation (hex-only, max 256 bytes)
 - **Agent**: `transformer` — `["transform.*", "file.*", "artifact.describe"]`, budget 20, timeout 600s. Chains file inspection → transform → result examination. `transform.decode` also added to surface/decompiler/intel agents

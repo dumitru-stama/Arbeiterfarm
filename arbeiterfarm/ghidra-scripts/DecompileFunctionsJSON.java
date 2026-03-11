@@ -3,7 +3,7 @@
 // Output: {"functions":[{"name":"main","address":"00401000","decompiled":"int main(...) {...}"}, ...]}
 //
 // NOTE: Uses manual JSON writing to avoid dependency on Gson (not always on classpath).
-//@category Claw
+//@category Arbeiterfarm
 import ghidra.app.script.GhidraScript;
 import ghidra.app.decompiler.*;
 import ghidra.program.model.listing.*;

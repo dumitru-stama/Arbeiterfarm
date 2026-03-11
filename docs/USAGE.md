@@ -4,13 +4,13 @@
 
 ```bash
 # 1. Create a project
-af project create malware-sample-42
+af-re project create malware-sample-42
 
 # 2. Upload a binary for analysis
-af artifact add /path/to/suspicious.exe --project <project-id>
+af-re artifact add /path/to/suspicious.exe --project <project-id>
 
 # 3. Start an interactive analysis session
-af chat --project <project-id>
+af-re chat --project <project-id>
 ```
 
 The agent will have access to all registered tools and can analyze the uploaded file on your behalf.
@@ -23,20 +23,20 @@ Projects are containers for related analysis work. Each project holds artifacts 
 
 ```bash
 # Create a project
-af project create "apt29-campaign"
+af-re project create "apt29-campaign"
 
 # List projects
-af project list
+af-re project list
 
 # Upload files into a project
-af artifact add sample.exe --project <project-id>
-af artifact add config.bin --project <project-id>
+af-re artifact add sample.exe --project <project-id>
+af-re artifact add config.bin --project <project-id>
 
 # List artifacts in a project
-af artifact list --project <project-id>
+af-re artifact list --project <project-id>
 
 # Show artifact details (hashes, size, mime type)
-af artifact info <artifact-id>
+af-re artifact info <artifact-id>
 ```
 
 ---
@@ -46,7 +46,7 @@ af artifact info <artifact-id>
 Start a conversation with an AI agent that can use analysis tools:
 
 ```bash
-af chat --project <project-id>
+af-re chat --project <project-id>
 ```
 
 ### Chat Options
@@ -90,13 +90,13 @@ Agents are specialized AI personas with different system prompts, tool access, a
 
 ```bash
 # Triage a sample quickly
-af chat --project <id> --agent surface
+af-re chat --project <id> --agent surface
 
 # Deep code analysis
-af chat --project <id> --agent decompiler
+af-re chat --project <id> --agent decompiler
 
 # Threat intelligence lookup
-af chat --project <id> --agent intel
+af-re chat --project <id> --agent intel
 ```
 
 ### Creating Custom Agents
@@ -104,7 +104,7 @@ af chat --project <id> --agent intel
 Agents are stored in the database. Create them via CLI or API — no recompilation needed. The `--prompt` field is free-form text; structure it however you want.
 
 ```bash
-af agent create \
+af-re agent create \
   --name "malware-specialist" \
   --prompt "You are an expert malware analyst specializing in API hooking and process injection techniques." \
   --tools "file.*,rizin.*,ghidra.*,vt.*,re-ioc.*" \
@@ -121,7 +121,7 @@ The `--route` flag controls which LLM backend the agent uses:
 Use it immediately — no restart required:
 
 ```bash
-af chat --project <id> --agent malware-specialist
+af-re chat --project <id> --agent malware-specialist
 ```
 
 ### Real-World Agent Examples
@@ -129,7 +129,7 @@ af chat --project <id> --agent malware-specialist
 **Ransomware analyst** — focused on encryption routines and C2 communication:
 
 ```bash
-af agent create \
+af-re agent create \
   --name "ransomware-analyst" \
   --prompt "## Role
 You are a ransomware specialist. Your goal is to identify encryption
@@ -156,7 +156,7 @@ Always end with an actionable assessment:
 **Packer identifier** — minimal tools, fast triage of packed samples:
 
 ```bash
-af agent create \
+af-re agent create \
   --name "packer-id" \
   --prompt "## Role
 You identify packers, protectors, and obfuscation in PE/ELF binaries.
@@ -178,7 +178,7 @@ and whether the sample can be statically unpacked." \
 **IoT firmware analyst** — for embedded device binaries:
 
 ```bash
-af agent create \
+af-re agent create \
   --name "firmware-analyst" \
   --prompt "## Role
 You analyze IoT and embedded firmware images (ARM, MIPS, RISC-V).
@@ -201,7 +201,7 @@ from rizin.bininfo and adjust your analysis accordingly." \
 **Local-only analyst** — forces all queries through a local LLM (no data sent to cloud):
 
 ```bash
-af agent create \
+af-re agent create \
   --name "local-only" \
   --prompt "You are a reverse engineering assistant. Analyze binaries thoroughly.
 Never summarize or skip details — the user needs complete technical output." \
@@ -215,13 +215,13 @@ The `--route local` flag ensures this agent only uses the locally-configured LLM
 
 ```bash
 # List all agents (builtin + custom)
-af agent list
+af-re agent list
 
 # Show agent details (system prompt, tools, route)
-af agent show ransomware-analyst
+af-re agent show ransomware-analyst
 
 # Delete a custom agent (builtins cannot be deleted)
-af agent delete packer-id
+af-re agent delete packer-id
 ```
 
 ---
@@ -251,7 +251,7 @@ Group 3:  [reporter] ─────┘  (sees everything, writes final report)
 ### Built-in Workflow: full-analysis
 
 ```bash
-af chat --project <id> --workflow full-analysis
+af-re chat --project <id> --workflow full-analysis
 ```
 
 | Group | Agents | What Happens |
@@ -268,13 +268,13 @@ Workflows are created via the API. Each step specifies an agent name, a group nu
 
 ```bash
 # First, create the specialized agents (if not already created)
-af agent create --name "crypto-hunter" \
+af-re agent create --name "crypto-hunter" \
   --prompt "You specialize in identifying cryptographic implementations.
 Focus on: key generation, encryption algorithms, IV/nonce handling,
 key storage, and any weaknesses that could enable decryption." \
   --tools "ghidra.*,rizin.*,file.*,strings.extract" --route auto
 
-af agent create --name "c2-tracker" \
+af-re agent create --name "c2-tracker" \
   --prompt "You specialize in command-and-control infrastructure analysis.
 Focus on: network indicators, domain generation algorithms, protocol
 analysis, beacon intervals, and communication encryption." \
@@ -300,7 +300,7 @@ curl -X POST http://localhost:8080/api/v1/workflows \
 Run it:
 
 ```bash
-af chat --project <id> --workflow ransomware-response
+af-re chat --project <id> --workflow ransomware-response
 # Prompt: "Analyze this ransomware sample"
 ```
 
@@ -390,10 +390,10 @@ Fan-out events appear in the CLI output:
 
 ```bash
 # List all workflows
-af workflow list
+af-re workflow list
 
 # Show workflow details (agents, groups, steps)
-af workflow show ransomware-response
+af-re workflow show ransomware-response
 ```
 
 ---
@@ -405,7 +405,7 @@ Tools are the capabilities available to agents. Each tool runs in a sandboxed su
 ### Listing Tools
 
 ```bash
-af tool list
+af-re tool list
 ```
 
 ### Available Tools
@@ -471,7 +471,7 @@ These tools are **restricted by default** — users need an explicit grant from 
 ### Running a Tool Directly
 
 ```bash
-af tool run file.info --project <id> --input '{"artifact_id": "<artifact-id>"}'
+af-re tool run file.info --project <id> --input '{"artifact_id": "<artifact-id>"}'
 ```
 
 ### Enabling and Disabling Tools
@@ -479,8 +479,8 @@ af tool run file.info --project <id> --input '{"artifact_id": "<artifact-id>"}'
 Disabled tools are hidden from agents and cannot be invoked. The setting persists across restarts.
 
 ```bash
-af tool disable rizin.bininfo
-af tool enable rizin.bininfo
+af-re tool disable rizin.bininfo
+af-re tool enable rizin.bininfo
 ```
 
 ---
@@ -561,16 +561,16 @@ In the web UI, clicking "Analyze" on a sample automatically creates a targeted t
 
 ```bash
 # List threads in a project
-af thread list --project <project-id>
+af-re thread list --project <project-id>
 
 # Show messages in a thread
-af thread show <thread-id>
+af-re thread show <thread-id>
 ```
 
 ### Resuming a Thread
 
 ```bash
-af chat --project <id> --thread <thread-id>
+af-re chat --project <id> --thread <thread-id>
 ```
 
 ### Exporting a Thread
@@ -579,10 +579,10 @@ Export a complete analysis as a Markdown report or JSON document:
 
 ```bash
 # Markdown (default) — suitable for reports
-af thread export <thread-id> --format markdown > report.md
+af-re thread export <thread-id> --format markdown > report.md
 
 # JSON — suitable for integration with other tools
-af thread export <thread-id> --format json > analysis.json
+af-re thread export <thread-id> --format json > analysis.json
 ```
 
 Exports include full message history with agent attribution, tool execution results, and evidence citations.
@@ -595,13 +595,13 @@ All tool executions, agent operations, and configuration changes are logged.
 
 ```bash
 # List recent audit entries
-af audit list
+af-re audit list
 
 # Limit results
-af audit list --limit 20
+af-re audit list --limit 20
 
 # Filter by event type
-af audit list --type tool_run
+af-re audit list --type tool_run
 ```
 
 ---
@@ -613,15 +613,15 @@ Reverse-Arbeiterfarm includes a built-in web interface. No build step or npm ins
 ### Running
 
 ```bash
-af serve --bind 127.0.0.1:8080
+af-re serve --bind 127.0.0.1:8080
 # Open http://localhost:8080 in your browser
 ```
 
 Log in with an API key (create one via CLI if you don't have one yet):
 
 ```bash
-af user create --name alice --roles operator
-af user api-key create --user <user-id> --name "browser"
+af-re user create --name alice --roles operator
+af-re user api-key create --user <user-id> --name "browser"
 # Copy the raw key shown and paste it into the login screen
 ```
 
@@ -672,7 +672,7 @@ export AF_CORS_ORIGIN="http://localhost:3000"  # or "*" for permissive
 Reverse-Arbeiterfarm can run as an HTTP API server for integration with other systems.
 
 ```bash
-af serve --bind 127.0.0.1:8080
+af-re serve --bind 127.0.0.1:8080
 ```
 
 ### API Endpoints
@@ -769,8 +769,8 @@ API requests require an API key passed via the `Authorization: Bearer <key>` hea
 
 ```bash
 # Create a user and API key
-af user create --name alice --roles operator
-af user api-key create --user <user-id> --name "alice-laptop"
+af-re user create --name alice --roles operator
+af-re user api-key create --user <user-id> --name "alice-laptop"
 
 # Use the API key
 curl -H "Authorization: Bearer <key>" http://localhost:8080/api/v1/projects
@@ -783,7 +783,7 @@ curl -H "Authorization: Bearer <key>" http://localhost:8080/api/v1/projects
 For production deployments, the worker daemon processes tool executions concurrently in the background. Multiple workers can run against the same database for horizontal scaling.
 
 ```bash
-af worker start --concurrency 4 --poll-ms 500
+af-re worker start --concurrency 4 --poll-ms 500
 ```
 
 | Flag | Default | Purpose |
@@ -801,19 +801,19 @@ For multi-tenant deployments with the API server.
 
 ```bash
 # Create a user
-af user create --name alice --display "Alice" --email alice@example.com --roles operator
+af-re user create --name alice --display "Alice" --email alice@example.com --roles operator
 
 # List users
-af user list
+af-re user list
 
 # Create an API key for a user
-af user api-key create --user <user-id> --name "ci-pipeline"
+af-re user api-key create --user <user-id> --name "ci-pipeline"
 
 # List API keys
-af user api-key list --user <user-id>
+af-re user api-key list --user <user-id>
 
 # Revoke an API key
-af user api-key revoke <key-id>
+af-re user api-key revoke <key-id>
 ```
 
 ---
@@ -845,28 +845,28 @@ If **only block rules** exist, everything not blocked is allowed (blocklist mode
 
 ```bash
 # Add a global block rule (admin only)
-af web-rule add --block --domain-suffix .ru "Block Russian domains"
+af-re web-rule add --block --domain-suffix .ru "Block Russian domains"
 
 # Add a project-scoped allow rule
-af web-rule add --allow --domain example.com --project <id>
+af-re web-rule add --allow --domain example.com --project <id>
 
 # Add a CIDR block rule
-af web-rule add --block --ip-cidr 10.0.0.0/8 "Block private IPs"
+af-re web-rule add --block --ip-cidr 10.0.0.0/8 "Block private IPs"
 
 # List all rules
-af web-rule list
+af-re web-rule list
 
 # Remove a rule
-af web-rule remove <rule-id>
+af-re web-rule remove <rule-id>
 
 # Block a country (GeoIP, requires MaxMind database)
-af web-rule block-country RU
+af-re web-rule block-country RU
 
 # Unblock a country
-af web-rule unblock-country RU
+af-re web-rule unblock-country RU
 
 # List blocked countries
-af web-rule list-countries
+af-re web-rule list-countries
 ```
 
 ---
@@ -885,22 +885,22 @@ Some tools require explicit admin grants before users can use them. By default, 
 
 ```bash
 # List restricted tool patterns
-af grant restricted
+af-re grant restricted
 
 # Add a new restricted pattern (admin only)
-af grant restrict "custom.dangerous.*"
+af-re grant restrict "custom.dangerous.*"
 
 # Remove a restriction
-af grant unrestrict "custom.dangerous.*"
+af-re grant unrestrict "custom.dangerous.*"
 
 # Grant a user access to web tools
-af grant tool <user-id> "web.*"
+af-re grant tool <user-id> "web.*"
 
 # List a user's grants
-af grant list <user-id>
+af-re grant list <user-id>
 
 # Revoke a grant
-af grant revoke <user-id> "web.*"
+af-re grant revoke <user-id> "web.*"
 ```
 
 ### Pattern Matching
@@ -916,64 +916,64 @@ af grant revoke <user-id> "web.*"
 ## Command Reference
 
 ```
-af project create <name> [--nda]
-af project nda <id> --on|--off
-af project settings <id> [--set key=value]
-af project list
+af-re project create <name> [--nda]
+af-re project nda <id> --on|--off
+af-re project settings <id> [--set key=value]
+af-re project list
 
-af artifact add <file> --project <id>
-af artifact list --project <id>
-af artifact info <artifact-id>
+af-re artifact add <file> --project <id>
+af-re artifact list --project <id>
+af-re artifact info <artifact-id>
 
-af chat --project <id> [--agent <name>] [--thread <id>] [--workflow <name>]
+af-re chat --project <id> [--agent <name>] [--thread <id>] [--workflow <name>]
 
-af thread list --project <id>
-af thread show <thread-id>
-af thread export <thread-id> [--format markdown|json]
+af-re thread list --project <id>
+af-re thread show <thread-id>
+af-re thread export <thread-id> [--format markdown|json]
 
-af tool list
-af tool run <tool> --project <id> --input <json>
-af tool enable <tool>
-af tool disable <tool>
+af-re tool list
+af-re tool run <tool> --project <id> --input <json>
+af-re tool enable <tool>
+af-re tool disable <tool>
 
-af agent list
-af agent show <name>
-af agent create --name <n> --prompt <p> --tools <patterns> [--route auto|local|backend:<name>]
-af agent delete <name>
+af-re agent list
+af-re agent show <name>
+af-re agent create --name <n> --prompt <p> --tools <patterns> [--route auto|local|backend:<name>]
+af-re agent delete <name>
 
-af workflow list
-af workflow show <name>
+af-re workflow list
+af-re workflow show <name>
 
-af think --project <id> --goal "..." [--agent <name>]
+af-re think --project <id> --goal "..." [--agent <name>]
 
-af audit list [--limit N] [--type <event-type>]
+af-re audit list [--limit N] [--type <event-type>]
 
-af web-rule add --block|--allow --domain|--domain-suffix|--url-prefix|--url-regex|--ip-cidr <pattern> [--project <id>] [description]
-af web-rule remove <rule-id>
-af web-rule list
-af web-rule block-country <code>
-af web-rule unblock-country <code>
-af web-rule list-countries
+af-re web-rule add --block|--allow --domain|--domain-suffix|--url-prefix|--url-regex|--ip-cidr <pattern> [--project <id>] [description]
+af-re web-rule remove <rule-id>
+af-re web-rule list
+af-re web-rule block-country <code>
+af-re web-rule unblock-country <code>
+af-re web-rule list-countries
 
-af grant restricted
-af grant restrict <pattern>
-af grant unrestrict <pattern>
-af grant tool <user-id> <pattern>
-af grant list <user-id>
-af grant revoke <user-id> <pattern>
+af-re grant restricted
+af-re grant restrict <pattern>
+af-re grant unrestrict <pattern>
+af-re grant tool <user-id> <pattern>
+af-re grant list <user-id>
+af-re grant revoke <user-id> <pattern>
 
-af ghidra-renames list --project <id> --artifact <artifact-id>
-af ghidra-renames suggest --project <id> --artifact <artifact-id>
-af ghidra-renames import --project <id> --artifact <artifact-id> --from-project <source-project-id>
+af-re ghidra-renames list --project <id> --artifact <artifact-id>
+af-re ghidra-renames suggest --project <id> --artifact <artifact-id>
+af-re ghidra-renames import --project <id> --artifact <artifact-id> --from-project <source-project-id>
 
-af serve [--bind 127.0.0.1:8080]
+af-re serve [--bind 127.0.0.1:8080]
 
-af worker start [--concurrency N] [--poll-ms MS]
+af-re worker start [--concurrency N] [--poll-ms MS]
 
-af user create --name <subject> [--display <text>] [--email <addr>] [--roles <roles>]
-af user list
-af user api-key create --user <id> --name <desc>
-af user api-key list --user <id>
-af user api-key revoke <key-id>
-af user routes <user-id> [--add route] [--remove route] [--clear]
+af-re user create --name <subject> [--display <text>] [--email <addr>] [--roles <roles>]
+af-re user list
+af-re user api-key create --user <id> --name <desc>
+af-re user api-key list --user <id>
+af-re user api-key revoke <key-id>
+af-re user routes <user-id> [--add route] [--remove route] [--clear]
 ```

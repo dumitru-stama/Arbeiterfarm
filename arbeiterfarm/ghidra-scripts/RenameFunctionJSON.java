@@ -4,7 +4,7 @@
 //          "errors":[{"old":"missing_func","error":"function not found"}]}
 //
 // NOTE: Uses manual JSON writing to avoid dependency on Gson (not always on classpath).
-//@category Claw
+//@category Arbeiterfarm
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.listing.*;
 import ghidra.program.model.address.*;
@@ -24,7 +24,7 @@ public class RenameFunctionJSON extends GhidraScript {
         String outputPath = args[1];
 
         FunctionManager fm = currentProgram.getFunctionManager();
-        int txId = currentProgram.startTransaction("claw-rename");
+        int txId = currentProgram.startTransaction("af-rename");
         boolean success = false;
 
         try (PrintWriter pw = new PrintWriter(new FileWriter(outputPath))) {
@@ -96,7 +96,7 @@ public class RenameFunctionJSON extends GhidraScript {
         currentProgram.endTransaction(txId, success);
 
         if (success) {
-            currentProgram.save("claw-rename", monitor);
+            currentProgram.save("af-rename", monitor);
             println("RenameFunctionJSON: saved project after renaming, wrote " + outputPath);
         }
     }

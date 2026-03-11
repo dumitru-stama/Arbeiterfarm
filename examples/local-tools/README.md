@@ -326,4 +326,4 @@ cannot be defined as TOML tools:
 | `vt.file_report.toml` | `vt.file_report` | oop | NoNetReadOnly |
 
 Binary paths in these files are placeholders. Replace with actual locations
-of `af-builtin-executor` and `af-executor`.
+of `af-builtin-executor` and `af-re-executor`.

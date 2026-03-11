@@ -70,7 +70,7 @@ re-ioc.*         → IOC listing and pivoting
 Agents are stored in the database, not compiled into the binary. Create, modify, or delete agents at runtime via CLI or API — changes take effect immediately, no restart needed.
 
 ```bash
-af agent create \
+af-re agent create \
   --name "firmware-analyst" \
   --prompt "You analyze IoT firmware. Focus on hardcoded credentials..." \
   --tools "file.*,rizin.*,ghidra.*,strings.extract" \
@@ -157,7 +157,7 @@ Workflows are powerful but predefined — you decide the agent pipeline in advan
 **Analogy**: Instead of following a fixed triage protocol, a senior research director examines the case, decides "I need the surface analyst first, then depending on what they find, maybe the decompiler, maybe the intel analyst," reads their reports, asks follow-up questions, and writes a synthesis.
 
 ```bash
-af think --project p1 --goal "Determine if this sample is related to APT29"
+af-re think --project p1 --goal "Determine if this sample is related to APT29"
 ```
 
 The thinker agent has 5 internal tools:
